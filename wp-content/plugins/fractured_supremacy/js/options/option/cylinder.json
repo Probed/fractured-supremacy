@@ -1,0 +1,10 @@
+{
+    "name": "Cylinder",
+    "cylinder": "cylinder",
+    "height" : "number",
+    "width" : "number",
+    "outerColor" : "color",
+    "innerColor" : "color",
+    "top-pos" : "number",
+    "left-pos" : "number"
+}

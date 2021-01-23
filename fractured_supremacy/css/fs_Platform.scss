@@ -1,0 +1,99 @@
+%platform {
+    box-sizing: border-box;
+    @include bg(rgba(255,255,255,0.1),null,null,cover,null);
+    /*    -webkit-box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow:    0px 20px 20px 0px rgba(0, 0, 0, 0.5);
+	box-shadow:         0px 20px 20px 0px rgba(0, 0, 0, 0.5);*/
+    /*box-shadow: inset 0px -6px 10px rgba(0,0,0,0.5);*/
+    display: block;
+    border-radius:0px;
+    /*border:1px solid white;*/
+    cursor:pointer;
+    transition:transform 250ms ease-in-out;
+    .platform-mount {
+	display:block;
+	@include pos(auto,auto);
+	@include size(11px,11px);
+	&.empty {
+	    display:none;
+	    @include bg(#000,null,null,null);
+	    border-radius:50%;
+	    z-index:2;
+	    cursor:pointer;
+	    @include size(20px,20px);
+	    &:hover {
+		background:red;
+	    }
+	}
+    }
+    .building-mount {
+	position: absolute;
+	@include size(25px * 1,25px);
+	border-radius:50%;
+	z-index:2;
+	&.empty {
+	    content:'+';
+	    &:hover {
+		display:block!important;
+		cursor:pointer;
+		background:blue;
+	    }
+	}
+	.building {
+	    > .model-wrap {
+		@extend %xy_center;
+	    }
+	}
+    }
+    &.active {
+	z-index:200;
+	@include transform-scale-xy(2);
+	box-shadow: inset 0px -6px 10px rgba(0,0,0,0.5);
+
+	.platform-mount {
+	    z-index:2;
+	    cursor:pointer;
+	    &.empty {
+		display:block;
+	    }
+	}
+	.building-mount {
+	    display:block;
+	    &.empty {
+		background:rgba(86,86,86,1);
+		display:block;
+		&:hover {
+		    background:rgba(255,255,255,1);
+		    cursor:pointer;
+		}
+	    }
+	}
+    }
+}
+.mid {
+    .platform-area {
+	position:absolute;
+	.platform {
+	    @extend %xy_center;
+	    @extend %platform;
+	}
+    }
+}
+
+.bot {
+    .list {
+	.platform{
+	    position: relative;
+	    float:left;
+	    cursor:pointer;
+	    @extend %platform;
+	    @include size($bot-size,$bot-size);
+	    span {
+		@extend %xy_center;
+		width:100%;
+		text-align:center;
+		z-index:2;
+	    }
+	}
+    }
+}

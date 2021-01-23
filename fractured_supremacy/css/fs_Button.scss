@@ -1,0 +1,52 @@
+.fs_Button {
+    background:#fff;
+    display:inline-block;
+    padding:4px 8px;
+    text-align:center;
+    border:1px solid black;
+    cursor:pointer;
+    border-radius:5px;
+    z-index:9;
+    position:relative;
+    &.edit {
+	border-color:blue;
+	color:blue;
+	&.active,
+	&:hover {
+	    color:white;
+	    background: blue;
+	}
+    }
+    &.plus {
+	border-color:green;
+	color:green;
+	&.active,
+	&:hover {
+	    color:white;
+	    background: green;
+	}
+    }
+    &.no {
+	border-color:red;
+	color:red;
+	&.active,
+	&:hover {
+	    color:#fff;
+	    background: red;
+	}
+    }
+    &.yes {
+	border-color:green;
+	color:green;
+	&.active,
+	&:hover {
+	    color:#fff;
+	    background: green;
+	}
+    }
+    &.active,
+    &:hover {
+	background: #000;
+	color:#fff;
+    }
+}

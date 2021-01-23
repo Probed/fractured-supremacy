@@ -1,0 +1,49 @@
+.fs_Cylinder{
+    position: absolute;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.fs_Cylinder:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.fs_Cylinder:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.water {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transition: 0.3s linear;
+    z-index: 2;
+}
+
+.water:before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+}
+
+.water:after {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    content: '';
+}
+.type-groups-wrap,
+.game-wrap {
+    .fs_Cylinder {
+	&.progress {
+	    /*display: none;*/
+	}
+    }
+}

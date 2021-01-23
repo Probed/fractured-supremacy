@@ -1,0 +1,15 @@
+{
+    "name" : "Cube",
+    "cube" : "string",
+    "top-pos" : "number",
+    "left-pos" : "number",
+    "size" : "number",
+    "top" : "src",
+    "bottom" : "src",
+    "left" : "src",
+    "right" : "src",
+    "front" : "src",
+    "back" : "src",
+    "rotateX" : "number",
+    "rotateY" : "number"
+}

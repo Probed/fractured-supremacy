@@ -1,0 +1,72 @@
+
+.top {
+    .celestial_object {
+	position:relative;
+	overflow:hidden;
+	border-radius: 50%;
+	display:inline-block;
+	@include size($top-size,$top-size);
+	margin-left:5px;
+	span {
+	    @extend %xy_center;
+	    @include size($left-size,$left-size);
+	    display:block;
+	    line-height: $left-size;
+	    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+	    overflow:hidden;
+	    font-size:12px;
+	    color:#fff;
+	}
+    }
+}
+
+.mid {
+    .celestial_object {
+	display:none;
+	@extend %fullsize;
+	@include pos();
+	@include bg(transparent);
+	> .model-wrap {
+	    @extend %xy_center;
+	}
+	&.active {
+	    display:block;
+	}
+	&.type-1 {
+
+	}
+    }
+
+
+}
+.bot {
+    .breadcrumbs {
+	.celestial_object-activate {
+	    position:relative;
+	    overflow:hidden;
+	    border-radius: 50%;
+	    display:inline-block;
+	    img {
+		@include size($right-size,$right-size);
+	    }
+	    span {
+		@extend %xy_center;
+		@include size($left-size,$left-size);
+		display:block;
+		line-height: $left-size;
+		text-shadow: 1px 1px 3px rgba(0,0,0,1);
+		overflow:hidden;
+		font-size:12px;
+		color:#fff;
+	    }
+	}
+    }
+    .celestial_object {
+	&.type-1 {
+
+	}
+    }
+
+}
+
+

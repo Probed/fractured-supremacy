@@ -1,0 +1,147 @@
+.fs_Debug-wrapper {
+    margin:auto;
+    width:100%;
+    right:40px;
+    position: absolute;
+    top:40px;
+    z-index:100000;
+}
+
+.fs_Debug-table {
+    position:absolute;
+    top:100%;
+    right:30px;
+    display:none;
+    max-width:960px;
+}
+.fs_Debug-table.active {
+    display: table;
+}
+.fs_Debug-table td {
+    padding:0 10px;
+    vertical-align: top;
+    border-bottom:1px solid #aaa;
+    text-align: left;
+}
+
+.fs_Debug-wrapper  {
+    font-size:14px;
+    font-family:monospace;
+}
+/*Columns*/
+.fs_Debug-wrapper  .time {
+    display:none;
+}
+
+.fs_Debug-wrapper  .level {
+    text-transform: uppercase;
+    display:none;
+}
+.fs_Debug-wrapper  .title {
+
+}
+.fs_Debug-wrapper  .value {
+
+}
+
+/* Row Types */
+.fs_Debug-wrapper .error * {
+    background-color:red;
+    color:#fff!important;
+}
+.fs_Debug-wrapper .info * {
+    color:#fff!important;
+    background-color:#000;
+}
+
+.fs_Debug-wrapper .success * {
+    color:#fff!important;
+    background-color:green;
+    font-weight: bold;
+
+}
+
+.fs_Debug-wrapper .sql {
+    color:#fff!important;
+    background-color:grey;
+    /*display:none;*/
+}
+
+.fs_Debug-wrapper .trace * {
+    color:#fff!important;
+    background-color:darkorange;
+}
+
+.fs_Debug-menu {
+    position:absolute;
+    top:0%;
+    -ms-transform: translate(-0%, -0%);
+    -webkit-transform: translate(-0%, -0%);
+    transform: translate(-0%, -0%);
+    padding:0;
+    margin:0;
+    list-style:none;
+    right:0;
+}
+.fs_Debug-menu li {
+    padding:0;
+    margin:0;
+    list-style:none;
+    text-align:center;
+
+}
+.fs_Debug-menu .level {
+    display: none;
+}
+.fs_Debug-line .title {
+    width:33.3333%;
+}
+.fs_Debug-line .value {
+    width:66.666%;
+}
+
+.fs_Debug-menu li a  {
+    display: block;
+    text-align: center;
+    padding:0px;
+    font-size:16px;
+    text-decoration: none;
+    width:30px;
+    height:30px;
+    line-height:30px;
+    overflow: hidden;
+}
+
+.fs_Debug-wrapper .pp {
+    padding:0;
+    margin:0 0 0 15px;
+    list-style:none;
+    text-align:left;
+}
+
+.fs_Debug-wrapper .pp li {
+    padding:0 0px 0 0;
+    margin:0;
+    list-style:none;
+    text-align:left;
+    /*float:left;*/
+    display:block;
+
+}
+.fs_Debug-wrapper .pp li:before {
+    color:blue;
+    content:'[';
+}
+
+.fs_Debug-wrapper .pp li:after {
+    content:']';
+    color:blue;
+}
+
+.fs_Debug-wrapper .value > .pp {
+    display: none;
+}
+
+.fs_Debug-wrapper .value:hover > .pp {
+    display: block;
+}

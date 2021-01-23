@@ -1,0 +1,17 @@
+{
+    "name": "Sphere",
+    "sphere": "string",
+    "bg": "src",
+    "globe": "src",
+    "globe_image_width": "number",
+    "globe_image_height": "number",
+    "halo": "src",
+    "halovis": "boolean",
+    "top-pos" : "number",
+    "left-pos" : "number",
+    "size": "number",
+    "lat": "number",
+    "lng": "number",
+    "segX": "number",
+    "segY": "number"
+}

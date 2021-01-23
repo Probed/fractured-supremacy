@@ -1,0 +1,88 @@
+$window_padding:5px;
+
+.fs_Window {
+    z-index:10000;
+    background:#fff;
+    /*border:2px solid #aaa;*/
+    -webkit-box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
+    position:absolute;
+    display:none;
+    cursor:move;
+    &.active {
+	display:block;
+    }
+
+    .main-table {
+	> thead {
+	    background:#ddd;
+	    > tr {
+		box-sizing: border-box;
+		> .top {
+		    padding:10px;
+		    display: block;
+		    width:100%;
+		    text-align:left;
+		    font-size:18px;
+		    .title-table {
+			width:100%;
+			.close {
+			    @extend %noselect;
+			    position: absolute;
+			    top:-15px;
+			    right:-15px;
+			    height:30px;
+			    width:30px;
+			    color:#fff;
+			    @include bg(#000);
+			    border-radius:50%;
+			    text-decoration: none;
+			    font-size:28px;
+			    line-height:28px;
+			    cursor:pointer;
+			    text-align:center;
+			    &:hover {
+				background:red;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+	> tbody {
+	    > tr {
+		box-sizing: border-box;
+		> .mid {
+		    box-sizing: border-box;
+		    background:#fff;
+		    cursor:auto;
+		    width:100%;
+		}
+	    }
+	}
+	> tfoot {
+	    > tr {
+		box-sizing: border-box;
+		> .bot {
+		    box-sizing: border-box;
+		    background:#ddd;
+		    padding:10px;
+		    display: block;
+		    width:100%;
+		    .footer-table {
+			width:100%;
+			text-align:center;
+		    }
+		}
+	    }
+	}
+    }
+    @extend %clear;
+}
+
+.window-table {
+    td {
+	padding:15px 15px;
+    }
+}

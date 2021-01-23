@@ -1,0 +1,37 @@
+%satellite {
+    @extend %xy_center;
+    @include bg(rgba(0,0,255,0.1),null,null,null,null);
+    display:inline-block;
+    border-radius:50%;
+}
+
+.mid {
+    .satellite {
+	@extend %satellite;
+    }
+}
+
+.bot {
+    .list {
+	.satellite {
+	    @extend %satellite;
+	    position: relative;
+	    float:left;
+	    cursor:pointer;
+	    @include size($bot-size,$bot-size);
+	    span {
+		@extend %xy_center;
+		width:100%;
+		text-align:center;
+	    }
+	    &.type-primary {
+		@extend %satellite-type-primary;
+		@include size($bot-size,$bot-size);
+	    }
+	    &.type-planet {
+		@extend %satellite-type-planet;
+		@include size($bot-size,$bot-size);
+	    }
+	}
+    }
+}

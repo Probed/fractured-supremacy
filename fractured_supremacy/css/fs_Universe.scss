@@ -1,0 +1,87 @@
+.fs_Universe {
+    @extend %fullsize;
+}
+
+.top-mid {
+    text-align:center;
+    .fs_Panel,
+    .model-wrap {
+	top:10px;
+	cursor:pointer;
+	width:60px;
+	transition: all .2s linear;
+
+	&.active,
+	&:hover {
+	    transform:scale(1.5);
+	}
+	> .xy_center {
+	    color: #fff;
+	    text-shadow: 2px 2px 0 #000, 4px 4px 0 #000;
+	    font-size:12px;
+	}
+    }
+    .fs_Panel {
+	position: static;
+	border-radius: 50%;
+	display:inline-block!important;
+    }
+
+}
+ul.type-list {
+    @extend %clearboth;
+    text-align: center;
+    display: inline-block;
+    li.type-list-type {
+	text-align: center;
+	/*float:left;*/
+	display: inline-block;
+	> span {
+	    display: block;
+	    color:#fff;
+	}
+	ul.types-type {
+	    vertical-align: top;
+	    margin:0 2px 0 2px;
+	    //float:left;
+	    li.type-list-cat {
+		//:left;
+		> span {
+		    display: block;
+		}
+		ul.types-subcats {
+		    @extend %clearboth;
+		    li.type-list-subcat {
+			margin:0;
+			> span {
+			    cursor:pointer;
+			    display: block;
+			    margin:0;
+			    &.active,
+			    &:hover {
+			    }
+			}
+			.model-wrap {
+			    @include size(30px,30px);
+			}
+			.model {
+			    @include size(30px,30px);
+			}
+		    }
+		}
+	    }
+	}
+    }
+}
+
+
+.type-list-cat.moon {
+    display: none;
+}
+.types-type {
+    position: relative;
+}
+.types-type:hover .type-list-cat.moon {
+    @include pos(40px,0);
+    display: block;
+}

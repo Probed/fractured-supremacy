@@ -1,0 +1,50 @@
+%fs_Cube-cont {
+    position: absolute;
+    margin: 0 auto;
+    transform-style: preserve-3d;
+    perspective: 0;
+    transition: transform 0.1s linear;
+}
+%fs_Cube-panel {
+    position: absolute;
+    top:0;
+    left:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:1;
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+    box-sizing: border-box;
+
+}
+
+.fs_Cube {
+    @extend %fs_Cube-cont;
+    top:0px;
+    left:0px;
+    > div {
+	@extend %fs_Cube-panel;
+	background-size: cover;
+	transform-origin: 50% 50%;
+    }
+    > .back {
+
+    }
+    > .front {
+
+    }
+    > .roof {
+
+    }
+    > .floor {
+
+    }
+    > .right {
+
+    }
+    > .left {
+
+    }
+    @content;
+}
+

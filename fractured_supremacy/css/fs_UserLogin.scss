@@ -1,0 +1,62 @@
+.fs_User-login {
+    @extend %fullsize;
+    position:relative;
+    display:block;
+    @include bg(transparent,'image/login-bg.jpg');
+    > h1 {
+	position:absolute;
+	top:20px;
+	width: 100%;
+	text-align: center;
+	text-shadow: 2px 2px 1px $grad_top, 5px 5px 0px #F6E39E;
+	color: transparent;
+	opacity: 0.3;
+	font-size:80px;
+	text-transform: uppercase;
+	font-weight: bold;
+    }
+    > aside {
+	position:absolute;
+	bottom:20px;
+	right:20px;
+	width: 100%;
+	text-align: right;
+	color:#fff;
+	font-size: 10px;
+
+    }
+    .tabs-wrapper-login {
+	@extend %tabs;
+	width:315px;
+	h1 {
+	    @extend %h1;
+	}
+    }
+    @include button("login") {
+	display: block;
+    }
+    @include button("create") {
+	display: block;
+    }
+    @include button("reset") {
+	display: block;
+    }
+    @include button("verify") {
+	display: block;
+    }
+    .facebook-login {
+	@extend %button;
+	@include bg(transparent, false, false, auto);
+	background-image:url('image/facebook.png'),linear-gradient(to right, transparent 0%, $facebook_color 50%, transparent 100%);
+	background-position: 40px 50%, 0 0;
+	border: none;
+	display: block;
+	color:#fff;
+	&:hover {
+	    @include bg(transparent, false, false, auto);
+	    background-image:url('image/facebook.png'),linear-gradient(to right, $facebook_color 0%, $facebook_color 50%, $facebook_color 100%);
+	    background-position: 40px 50%, 0 0;
+	    border:none;
+	}
+    }
+}

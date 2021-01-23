@@ -1,0 +1,55 @@
+{
+    "resource": {
+	"model": ["css", "var", "image"]
+    },
+    "celestial_object": {
+	"model": ["css", "var", "sphere"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"]
+    },
+    "platform": {
+	"model": ["css", "var", "image"],
+	"mounts": ["mount"],
+	"upTo": ["platform"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"],
+	"produce": ["produce"]
+    },
+    "building": {
+	"model": ["css", "var", "cube", "sphere", "cylinder", "panel"],
+	"upTo": ["building"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"],
+	"produce": ["produce"]
+    },
+    "satellite": {
+	"model": ["css", "var", "layout", "image"],
+	"upTo": ["satellite"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"]
+    },
+    "item": {
+	"model": ["css", "var"]
+    },
+    "inhabitant": {
+	"model": ["css", "var"],
+	"upTo": ["inhabitant"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"]
+    },
+    "achievement": {
+	"model": ["css", "var"]
+    },
+    "alliance": {
+	"model": ["css", "var"]
+    },
+    "expedition": {
+	"model": ["css", "var"]
+    },
+    "tech_tree": {
+	"model": ["css", "cube", "cylinder", "image", "sphere", "var"],
+	"upTo": ["tech_tree"],
+	"buildCost": ["resource", "time", "item"],
+	"buildReq": ["celestial_object", "satellite", "platform", "building", "item", "inhabitant", "tech_tree"]
+    }
+}

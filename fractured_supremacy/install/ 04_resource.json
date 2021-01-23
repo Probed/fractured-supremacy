@@ -1,0 +1,134 @@
+{
+    "Basic": {
+	"Energy": {
+	    "Ingredient": {
+		"Power": {
+		    "subcat": "Power",
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Hydrogen": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Helium": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Carbon": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Nitrogen": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Oxygen": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Neon": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Silicon": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Iron": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Silver": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Gold": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Titanium": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Uranium": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		},
+		"Plutonium": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {}
+		}
+	    }
+	},
+
+	"Molecular": {
+	    "Ingrediant": {
+		"Water": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {
+			"req": [
+			    {
+				"Hydrogen": 2,
+				"Oxygen": 1
+			    }
+			]
+		    }
+		},
+		"DNA": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {
+			"req": [
+			    {
+				"Hydrogen": 2,
+				"Oxygen": 1,
+				"Carbon": 2,
+				"Nitrogen": 3
+			    }
+			]
+		    }
+		},
+		"Nanotube": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {
+			"req": [
+			    {
+				"Carbon": 2,
+				"Power": 2
+			    }
+			]
+		    }
+		},
+		"Buckyball": {
+		    "short_desc": "",
+		    "long_desc": "",
+		    "options": {
+			"req": [
+			    {
+				"Carbon": 2,
+				"Power": 2
+			    }
+			]
+		    }
+		}
+	    }
+	}
+    }
+}

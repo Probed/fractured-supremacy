@@ -1,0 +1,12 @@
+{
+    "name": "Panel",
+    "panel": "string",
+    "image": "src",
+    "height": "number",
+    "width": "number",
+    "top-pos": "number",
+    "left-pos": "number",
+    "rotateX": "number",
+    "rotateY": "number",
+    "rotateZ": "number"
+}

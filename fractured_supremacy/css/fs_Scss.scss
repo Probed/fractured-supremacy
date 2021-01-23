@@ -1,0 +1,272 @@
+@import "css/compass-mixins-master/lib/compass/_css3.scss";
+
+$col-margin:5px 0 5px 0;
+$panel-padding:20px;
+$border_radius: 10px;
+$grad_top: #633030;
+$grad_mid: #4b3838;
+$grad_bot: transparent;
+$text_light: #fefefe;
+$text_dark: #333;
+$modal:  rgba(0,0,0,0.75);
+$spinner: #fff;
+$facebook_color:#3b5998;
+
+%clear {
+    content: '';
+    display: block;
+    clear: both;
+}
+%clearboth {
+    &:before {
+	@extend %clear;
+    }
+    &:after {
+	@extend %clear;
+    }
+}
+@mixin size($height,$width) {
+    height:$height;
+    width:$width;
+}
+
+@mixin bg($color:transparent,$image:false,$pos:center center,$size:cover,$repeat:no-repeat) {
+    @if $color {
+	background-color: $color;
+    }
+    @if $size {
+	background-size: $size;
+    }
+    @if $repeat {
+	background-repeat: $repeat;
+    }
+    @if $pos {
+	background-position: $pos;
+    }
+    @if $image {
+	background-image:url('#{$image}');
+	background-attachment: scroll;
+    }
+}
+
+@mixin pos($top:0,$left:0,$bottom:auto,$right:auto) {
+    position: absolute;
+    top:$top;
+    left:$left;
+    bottom:$bottom;
+    right:$right;
+}
+
+@function fs_var($name) {
+    $idx : 0;
+    @each $var in $vars {
+	@if ($var == $name) {
+	    $i: index($vars, $var);
+	    $idx:$i;
+	}
+    }
+    @return nth($vals,$idx);
+}
+
+%body_font {
+    font-family:sans-serif;
+    font-size:14px;
+    font-weight: normal;
+}
+%body_text {
+    color:#fff;
+    text-align: center;
+    text-decoration: none;
+}
+
+
+
+
+$button_normal: #000;
+$button_normal_bg: #fff;
+
+$button_hover: #fff;
+$button_hover_bg: #000;
+
+
+%button_font {
+    font-family:monospace;
+    font-size:12px;
+    font-weight: bold;
+}
+%button_text {
+    color:$button_normal;
+    /*text-transform: uppercase;*/
+    text-align: center;
+    text-decoration: none;
+    &:hover {
+	color:$button_hover;
+    }
+
+}
+%button_box {
+    display: inline-block;
+    margin:0;
+    padding:20px 10px;
+    border: 1px solid $button_normal;
+    /*border-radius:$border-radius;*/
+    background:$button_normal_bg;
+    cursor: pointer;
+    &:hover {
+	border: 1px solid $button_hover_bg;
+	background:$button_hover_bg;
+    }
+}
+%button {
+    @extend %button_font;
+    @extend %button_text;
+    @extend %button_box;
+    @extend %noselect;
+}
+@mixin button($type) {
+    .button-#{$type} {
+	@extend %button;
+	@content;
+    }
+}
+
+
+@mixin transform-scale-xy($scale:1, $x: -50%,$y: -50%) {
+    -ms-transform: translate($x, $y) scale($scale);
+    -webkit-transform: translate($x, $y) scale($scale);
+    transform: translate($x, $y) scale($scale);
+}
+%xy_center {
+    @include pos(50%,50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+%x_center {
+    position:absolute;
+    left:50%;
+    -ms-transform: translate(-50%, 0%);
+    -webkit-transform: translate(-50%, 0%);
+    transform: translate(-50%, 0%);
+}
+%y_center {
+    position:absolute;
+    top:50%;
+    -ms-transform: translate(0%, -50%);
+    -webkit-transform: translate(0%, -50%);
+    transform: translate(0%, -50%);
+}
+.x_center {
+    @extend %x_center;
+}
+.y_center {
+    @extend %y_center;
+}
+.xy_center {
+    @extend %xy_center;
+}
+
+%h1 {
+    font-size:30px;
+    text-align:center;
+    padding:0 0 20px 0;
+    color:$text_light;
+}
+@mixin top-left() {
+    @include pos(0,0);
+}
+@mixin top-right() {
+    @include pos(0,auto,auto,0);
+}
+@mixin bottom-left() {
+    @include pos(auto,0,0,auto);
+}
+@mixin bottom-right() {
+    @include pos(auto,auto,0,0);
+}
+
+
+%fullsize {
+    @include size(100%,100%);
+}
+
+%noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+@mixin name-button($table,$action) {
+    .name-#{$table}-#{$action} {
+	@extend %noselect;
+	position:relative;
+	display:none;
+	font-size:10px;
+	padding:2px 5px;
+	text-decoration: none;
+	background:$text_light;
+	color:$text_dark;
+	float:right;
+	&:hover {
+	    background:$text_dark;
+	    color:$text_light;
+	}
+	@content;
+    }
+}
+@mixin name_editor($table) {
+    #name-#{$table} {
+	position: relative;
+	.name-wrapper {
+	    h1 {
+		@extend %h1;
+	    }
+	    .name-edit-wrapper {
+		@include pos(0,0);
+		width: 100%;
+		[type="text"] {
+		    float:right;
+		    display: none;
+		    background: #fff;
+		    font-size: 9px;
+		    line-height: 13px;
+		    height: 13px;
+		    padding:0 0 0 5px;
+		    width: auto;
+		    border-radius: 0;
+		    text-align: center;
+		}
+		@include name-button($table,'cancel'){
+
+		}
+		@include name-button($table,'edit') {
+		    display:inline-block;
+		}
+		@include name-button($table,'save') {
+
+		}
+	    }
+	}
+	&.active {
+	    .name-wrapper {
+		[type="text"] {
+		    display: inline-block;
+		}
+		.name-#{$table}-cancel {
+		    display:inline-block;
+		}
+		.name-#{$table}-edit {
+		    display:none;
+		}
+		.name-#{$table}-save {
+		    display:inline-block;
+		}
+	    }
+	}
+    }
+}
+

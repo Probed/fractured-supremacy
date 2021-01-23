@@ -1,0 +1,109 @@
+.fs_Character-sheet {
+    min-height:300px;
+    border-radius:$border-radius;
+    overflow: hidden;
+    position:relative;
+    display: inline-block;
+    cursor:initial;
+    @include bg(transparent,'image/login-bg.jpg');
+    @include name_editor('character');
+    .tabs-wrapper-character {
+	@extend %tabs;
+	width:355px;
+	h1 {
+	    @extend %h1;
+	}
+    }
+    .fs_Character-image {
+	position:relative;
+	@extend %noselect;
+    }
+    .image-wrapper {
+	margin:$col-margin;
+	position:relative;
+	height:150px;
+	width:100%;
+
+	.image {
+	    position:absolute;
+	    top:0;
+	    left:0;
+	    height:150px;
+	    width:100%;
+	    display: none;
+	    .img {
+		@extend %xy_center;
+		width:150px;
+		height:150px;
+		overflow:hidden;
+		border-radius: 50%;
+		img {
+		    width:150px;
+		    height:150px;
+		}
+	    }
+	    &.active {
+		display: block;
+	    }
+	    .activate-image {
+		@extend %x_center;
+		width:100%;
+		bottom:20px;
+		background:rgba(0,0,0,0.9);
+		color:#fff;
+		text-decoration: none;
+		text-transform: uppercase;
+	    }
+	    .delete-image {
+		position: absolute;
+		top:-5px;
+		right:0;
+		background:rgba(0,0,0,0.9);
+		color:red;
+		text-decoration: none;
+		text-transform: uppercase;
+		text-shadow:none;
+		background: none;
+		overflow:hidden;
+		height:15px;
+		width:auto;
+		font-size:9px;
+		line-height: 15px;;
+	    }
+	}
+	.prev {
+	    @extend %y_center;
+	    cursor:pointer;
+	    left:0px;
+	    height:15px;
+	    width:15px;
+	    background:#fff;
+	}
+	.next {
+	    @extend %y_center;
+	    cursor:pointer;
+	    right:0px;
+	    height:15px;
+	    width:15px;
+	    background:#fff;
+	}
+    }
+    .input-file {
+	display:none;
+    }
+    @include button("charimage") {
+	position: absolute;
+	top:0;
+	left:0;
+	padding:2px 5px;
+	margin:0;
+	display: block;
+	border-radius: 0;
+	font-size:10px;padding:2px 5px;
+    }
+    .tabs-wrapper-character-inventory {
+	@extend %tabs;
+	margin-right:-$panel-padding;
+	margin-left:-$panel-padding;
+    };
+}

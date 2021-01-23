@@ -1,0 +1,17 @@
+
+.bot {
+    .list {
+	.building {
+	    position: relative;
+	    float:left;
+	    cursor:pointer;
+	    @include size($bot-size,$bot-size);
+	    border:1px solid gold;
+	    overflow:hidden;
+	    .model-wrap {
+		@extend %xy_center;
+	    }
+	}
+    }
+}
+

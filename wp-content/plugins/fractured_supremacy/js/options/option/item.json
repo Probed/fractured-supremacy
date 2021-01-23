@@ -1,0 +1,5 @@
+{
+    "name" : "Item",
+    "item": "id",
+    "qty": "number"
+}

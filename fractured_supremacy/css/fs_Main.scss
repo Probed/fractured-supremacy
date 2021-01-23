@@ -1,0 +1,170 @@
+$top-size: 40px;
+$right-size: 40px;
+$left-size: 40px;
+$bot-size: 120px;
+
+.page-wrapper {
+    @extend %fullsize;
+    position:relative;
+    overflow:hidden;
+    > .game-wrap {
+	@extend %fullsize;
+	position:relative;
+	overflow:hidden;
+	> .top {
+	    @include pos(0,0);
+	    @include bg(rgba(0,0,0,0.75),false,false,false);
+	    width:100%;
+	    z-index:4;
+	    height:$top-size;
+
+	    .logout {
+		float:right;
+		display:block;
+		padding:0 10px;
+		font-size: 10px;
+		text-decoration: none;
+		text-transform: uppercase;
+		color:#fff;
+		line-height:$top-size;
+
+		&:hover {
+		    @include bg(#fff,false,false,false);
+		    color:#000;
+		}
+	    }
+	}
+	> .left {
+	    height:100%;
+	    height:calc(100% - (#{$top-size} + #{$bot-size}));
+	    width:$left-size;
+	    z-index:2;
+	    @include bg(rgba(0,0,0,0.75),false,false,false);
+	    @include pos($top-size,0);
+	}
+	> .mid {
+	    @extend %fullsize;
+	    z-index:1;
+	    @include pos();
+	    .viewport {
+		@extend %fullsize;
+		overflow:hidden;
+		.game {
+		    @extend %fullsize;
+		    transform-origin: center center;
+		}
+	    }
+	}
+	> .right {
+	    z-index:2;
+	    @include pos($top-size,auto,auto,0);
+	    height:100%;
+	    height:calc(100% - (#{$top-size} + #{$bot-size}));
+	    width:$right-size;
+	    @include bg(rgba(0,0,0,0.75),false,false,false);
+	}
+	> .bot {
+	    width:100%;
+	    z-index:3;
+	    @include pos(auto,0,0);
+	    height:$bot-size;
+	    @include bg(rgba(0,0,0,0.75),false,false,false);
+	    transition:height 0.25s linear;
+	    .platform-upgrade {
+		@extend %button;
+	    }
+	    > .min {
+		@include pos(auto,auto,$bot-size,$right-size+2);
+		@include size(20px,20px);
+		@include bg(#000,false,false,false);
+		cursor:pointer;
+		transition:all 0.25s linear;
+		&:after {
+		    transition:all 0.25s linear;
+		    @extend xy_center;
+		    display:block;
+		    text-align:center;
+		    content:'\2193';
+		    @include size(20px,20px);
+		    line-height:20px;
+		}
+	    }
+	    &.minimized {
+		height:$top-size;
+		> .min {
+		    @include pos(auto,auto,$top-size,$right-size+2);
+		    &:after {
+			content: '\2191';
+		    }
+		}
+	    }
+	}
+    }
+    > .windows {
+	@include pos();
+	z-index:100;
+	width:100%;
+    }
+}
+
+.bot {
+    text-align:left;
+    .breadcrumbs {
+	@include pos(auto,($left-size+2),$bot-size+2,auto);
+	transition:all 0.25s linear;
+	> div {
+	    @include bg(rgba(0,0,0,0.75),false,false,false);
+	    cursor:pointer;
+	    padding-left:10px;
+	    padding-right:10px;
+	    margin-right:10px;
+	    height:$top-size/2;
+	    line-height:$top-size/2;
+	    display:inline-block;
+	    text-align:center;
+	    border:1px solid #fff;
+	    border-top-right-radius:$border-radius;
+	    border-bottom-right-radius:$border-radius;
+	    font-size:12px;
+	    &:hover {
+		@include bg(#fff,false,false,false,false);
+		color:#000;
+	    }
+	}
+    }
+    .image-wrap {
+	float:left;
+	height:$bot-size;
+	width:$bot-size+40px;
+	position:relative;
+	.fs_Sphere {
+	    zoom:0.12;
+	}
+	.image {
+	    height:$bot-size;
+	}
+    }
+    .properties {
+	float:left;
+	.name {
+	}
+	.type {
+	}
+	.category {
+	}
+	.subcat {
+	}
+	.short_desc {
+	}
+	.long_desc {
+	}
+    }
+    &.minimized {
+	.breadcrumbs {
+	    @include pos(auto,($left-size+2),$top-size+2,auto);
+	}
+    }
+    &:after {
+	@extend %clear;
+    }
+}
