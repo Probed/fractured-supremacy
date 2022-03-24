@@ -3,20 +3,23 @@ $window_padding:5px;
 .fs_Window {
     z-index:10000;
     background:#fff;
-    /*border:2px solid #aaa;*/
+    border-left:20px solid #333;
+    border-right:20px solid #333;
     -webkit-box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
     -moz-box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
     box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.3);
     position:absolute;
     display:none;
     cursor:move;
+    max-width: 1024px;
+    border-radius: 8px;
     &.active {
 	display:block;
     }
 
     .main-table {
 	> thead {
-	    background:#ddd;
+	    background:#333;
 	    > tr {
 		box-sizing: border-box;
 		> .top {
@@ -27,6 +30,7 @@ $window_padding:5px;
 		    font-size:18px;
 		    .title-table {
 			width:100%;
+			color:#fff;
 			.close {
 			    @extend %noselect;
 			    position: absolute;
@@ -34,14 +38,19 @@ $window_padding:5px;
 			    right:-15px;
 			    height:30px;
 			    width:30px;
-			    color:#fff;
-			    @include bg(#000);
+			    @include bg(#333);
 			    border-radius:50%;
-			    text-decoration: none;
-			    font-size:28px;
-			    line-height:28px;
+			    border:1px solid #fff;
 			    cursor:pointer;
 			    text-align:center;
+			    &:before {
+				@extend %xy_center;
+				text-decoration: none;
+				font-size:11px;
+				line-height:28px;
+				color:#fff;
+				content:'X';
+			    }
 			    &:hover {
 				background:red;
 			    }
@@ -66,7 +75,7 @@ $window_padding:5px;
 		box-sizing: border-box;
 		> .bot {
 		    box-sizing: border-box;
-		    background:#ddd;
+		    background:#333;
 		    padding:10px;
 		    display: block;
 		    width:100%;
@@ -85,4 +94,40 @@ $window_padding:5px;
     td {
 	padding:15px 15px;
     }
+}
+
+.upTo-model,
+.properties-model {
+    table {
+	td {
+	    padding:2px 15px;
+	    text-transform: capitalize;
+	}
+    }
+    .model-wrap {
+	height:100px;
+	width:100px;
+	.model {
+	    @extend %xy_center;
+	}
+    }
+}
+.button-cont {
+    padding-top: 10px!important;
+}
+
+.produce-input-model,
+.produce-output-model {
+    .model-wrap {
+	height:25px;
+	width:25px;
+	.model {
+	    @extend %xy_center;
+	}
+    }
+}
+.properties-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-top:15px;
 }

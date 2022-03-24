@@ -87,8 +87,8 @@ var fs_TopBar = new Class({
 
 //		    var model = new fs_Model(type, {
 //			size: 15,
-//			segX: 8,
-//			segY: 6
+//			segX: 5,
+//			segY: 5
 //		    });
 			var model = new fs_Panel({
 			    panel: 'co_panel',

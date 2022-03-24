@@ -1,14 +1,18 @@
 %tabs {
+    margin:15px;
     @extend %clearboth;
     display: block;
-	vertical-align:top;
-    > .tabs  {
+    vertical-align:top;
+    > .tabs {
+	@extend %clearboth;
 	display: block;
+	text-align: left;
 	position: relative;
 	/*float:left;*/
 	vertical-align:top;
-	border-bottom:1px solid #000;
+	border-bottom:1px solid #ccc;
 	/*width:100px;*/
+	white-space: nowrap;
 	&:empty {
 	    display:none;
 	}
@@ -19,56 +23,58 @@
 	    margin:0!important;
 	    &.active {
 		> a {
-		    border-top-right-radius:10px;
-		    border-top-left-radius:10px;
+		    border-top-right-radius:5px;
+		    border-top-left-radius:5px;
 		    border-bottom-right-radius:0;
 		    border-bottom-left-radius:0px;
 		}
 	    }
 	    > a {
-		border-top-right-radius:10px;
-		border-top-left-radius:10px;
+		border-top-right-radius:5px;
+		border-top-left-radius:5px;
 		border-bottom-right-radius:0;
 		border-bottom-left-radius:0px;
 		white-space:nowrap;
 		text-align:right;
 		display: block;
-		background: #eee;
+		background: #fff;
 		color:#000;
 		border:0;
-		padding:3px 10px;
+		padding:8px 16px;
 		font-size:13px;
 		outline:none;
 		display: block;
 		text-align: right;
 		text-decoration: none;
+		margin-right:5px;
+		text-transform: uppercase;
+		background: #fefefe;
+		border-right: 1px solid #ccc;
+		border-left: 1px solid #ccc;
+		border-top: 1px solid #ccc;
+		outline:none;
 		&:hover {
-		    border:0;
 		    text-shadow: none;
+		    background: #333;
+		    color:#fff;
 		}
 	    }
 	    &.active {
 		> a {
-		    border:0;
-		    background: #000;
-		    color:white;
+		    background: #333;
+		    color:#fff;
 		    text-shadow: none;
 		}
 
 	    }
 	}
-	&:before {
-	    @extend %clear;
-	}
-	&:after {
-	    @extend %clear;
-	}
     }
 
     > .tab-panels {
+	@extend %clearboth;
 	display: block;
 	> .tab-panel {
-	    padding:0 10px;
+	    padding:15px 0px;
 	    display:none;
 	    &:before {
 		@extend %clear;
@@ -80,18 +86,5 @@
 	> .tab-panel.active {
 	    display:block;
 	}
-	&:before {
-	    @extend %clear;
-	}
-	&:after {
-	    @extend %clear;
-	}
-
-    }
-    &:before {
-	@extend %clear;
-    }
-    &:after {
-	@extend %clear;
     }
 }

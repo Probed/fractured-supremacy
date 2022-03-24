@@ -23,9 +23,7 @@ var fs_Building = new Class({
 //	    this.cont.adopt(building["object"].toElement());
 //	}.bind(this));
 
-	this.model = new fs_Model(building);
-	this.cont.adopt(this.model);
-
+	this.cont.adopt(this.getModel());
     },
 
     /**
@@ -33,10 +31,18 @@ var fs_Building = new Class({
      *
      * @returns null
      */
-    loadContainers :function() {
+    loadContainers: function () {
 //	Object.each(this.options["buildings"], function (building, id) {
 //	    this.cont.adopt(building["object"].loadContainers());
 //	}.bind(this));
 	return this.cont;
     },
+    upgrade: function (response) {
+	var building = response.building;
+	building["object"] = new fs_Building(building, this.platform);
+	this.platform.satellite.options.platforms[this.platform.options.id]["buildings"][building.id] = building;
+	this.platform.buildingMounts[building.options.mount].empty().adopt(building["object"].toElement());
+	this.platform.satellite.mountPlatforms();
+	this.parent(response);
+    }
 });

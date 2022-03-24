@@ -1,7 +1,11 @@
 %satellite {
     @extend %xy_center;
-    @include bg(rgba(0,0,255,0.1),null,null,null,null);
     display:inline-block;
+    border-radius:50%;
+}
+.satellite-shield {
+    @extend %xy_center;
+    @include bg(rgba(0,0,255,0.1),null,null,null,null);
     border-radius:50%;
 }
 

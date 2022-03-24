@@ -14,7 +14,7 @@
 if (!defined('ABSPATH'))
     exit;
 
-ini_set('dislay_errors', 1);
+ini_set('dislay_errors', 0);
 
 if (is_admin()) {
     add_action('admin_menu', 'fs_Admin::admin');
@@ -44,7 +44,9 @@ class fs_Admin {
 	wp_register_script('fs_ModelBuilder', plugins_url('/js/options/fs_ModelBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_ModelBuilder.js'));
 	wp_register_script('fs_LayoutBuilder', plugins_url('/js/options/fs_LayoutBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_LayoutBuilder.js'));
 	wp_register_script('fs_ProduceBuilder', plugins_url('/js/options/fs_ProduceBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_ProduceBuilder.js'));
-	wp_register_script('fs_ResourcePath', plugins_url('/js/options/fs_ResourcePath.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_ResourcePath.js'));
+	wp_register_script('fs_BuildCostBuilder', plugins_url('/js/options/fs_BuildCostBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_BuildCostBuilder.js'));
+	wp_register_script('fs_BuildReqBuilder', plugins_url('/js/options/fs_BuildReqBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_BuildReqBuilder.js'));
+	wp_register_script('fs_Chain', plugins_url('/js/options/fs_Chain.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_Chain.js'));
 	wp_register_script('fs_NewCharacterBuilder', plugins_url('/js/options/fs_NewCharacterBuilder.js', __FILE__), null, filemtime(plugin_dir_path(__FILE__) . 'js/options/fs_NewCharacterBuilder.js'));
 
 	add_action('wp_ajax_update_options', 'fs_Admin::update_options');
@@ -84,9 +86,10 @@ class fs_Admin {
 	wp_enqueue_script('fs_ModelBuilder');
 	wp_enqueue_script('fs_LayoutBuilder');
 	wp_enqueue_script('fs_ProduceBuilder');
+	wp_enqueue_script('fs_BuildCostBuilder');
+	wp_enqueue_script('fs_BuildReqBuilder');
 	wp_enqueue_script('fs_NewCharacterBuilder');
-	wp_enqueue_script('fs_ResourcePath');
-
+	wp_enqueue_script('fs_Chain');
     }
 
     public static function action_links($links) {

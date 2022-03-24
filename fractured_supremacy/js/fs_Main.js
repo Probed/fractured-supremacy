@@ -49,6 +49,7 @@ var fs_Main = new Class({
 	this._topbar.refreshTopMid(UNIVERSE["universe"].celestial_objects);
 	this.mid.adopt(this.uni.loadContainers());
 	this.uni.activate();
+	buildUpTypesArr();
     },
     submit: function (options) {
 	var data = {
@@ -69,7 +70,7 @@ var fs_Main = new Class({
 		    debug.open();
 		    error({
 			title: "Submission Error",
-			body: (function () {
+			body: function () {
 			    var ret = new Element('div', {
 				'class': 'error'
 			    });
@@ -82,13 +83,74 @@ var fs_Main = new Class({
 			    }
 			    if (resp.error) {
 				ret.adopt(new Element('div', {
-				    html: '<br/><br/>' + resp.error
+				    html: resp.error
 				}));
 			    }
+			    if (resp.buildCost) {
+				var tbl = new HtmlTable({
+				    zebra: false,
+				    properties: {
+
+				    }
+				});
+				each(resp.buildCost, function (types, table) {
+				    each(types, function (type, idx) {
+					tbl.push([
+					    {
+						content: type.name,
+						properties: {
+						    class: 'v-middle'
+						}
+					    },
+					    {
+						content: type.qty.toLocaleString(),
+						properties: {
+						    class: 'v-middle text-right'
+						}
+					    },
+					    {
+						content: new fs_Model(type, {height: 25, width: 25}).toElement(),
+						properties: {
+						    class: 'v-middle text-center'
+						}
+					    }
+					]);
+				    }.bind(this));
+				}.bind(this));
+				ret.adopt(tbl.toElement());
+			    }
+			    if (resp.buildReq) {
+				var tbl = new HtmlTable({
+				    zebra: false,
+				    properties: {
+
+				    }
+				});
+				each(resp.buildReq, function (types, table) {
+				    each(types, function (type, idx) {
+					tbl.push([
+					    {
+						content: type.name,
+						properties: {
+						    class: 'v-middle'
+						}
+					    },
+					    {
+						content: new fs_Model(type).toElement(),
+						properties: {
+						    class: 'v-middle text-center'
+						}
+					    }
+					]);
+				    }.bind(this));
+				}.bind(this));
+				ret.adopt(tbl.toElement());
+			    }
 			    return ret;
-			})()
+			}.bind(this)
 		    });
 		}
+		debug.update(resp);
 	    }.bind(this),
 	    onError: function (text, error) {
 

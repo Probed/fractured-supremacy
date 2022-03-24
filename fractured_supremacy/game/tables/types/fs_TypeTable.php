@@ -54,10 +54,6 @@ class fs_TypeTable extends fs_Table {
 	    $this->row["options"] = array();
 	}
 	$opts = array_merge($this->type["options"], $this->row["options"]);
-	$lvl = $opts["level"];
-	if ($opts["levels"] && $opts["levels"][$lvl]) {
-	    $opts = array_merge($opts, $opts["levels"][$lvl]);
-	}
 	$this->options = $opts;
     }
 
@@ -147,7 +143,7 @@ class fs_TypeTable extends fs_Table {
 	    }
 	    if (gettype($t) == 'array') {
 		foreach ($t as $idx => $row) {
-		    $css = $row["options"]["css"];
+		    $css = null;//$row["options"]["css"];
 		    if (!empty($css)) {
 			if (!empty($css["vars"])) {
 			    foreach ($css["vars"] as $key => $value) {

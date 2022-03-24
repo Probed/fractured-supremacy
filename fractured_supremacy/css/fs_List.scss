@@ -1,11 +1,14 @@
 .fs_List {
     @extend %noselect;
+    @extend %clearboth;
     .fs_ListItem {
+	cursor:pointer;
 	position:relative;
-	display:inline-block;
+	/*display:inline-block;*/
+	float:left;
 	width:75px;
-	height:80px;
-	border:1px solid gold;
+	height:75px;
+	/*border:1px solid gold;*/
 	border-radius: 10px;
 	margin:0 7px 7px 0;
 	overflow:hidden;
@@ -14,37 +17,50 @@
 	> span {
 	    @extend %noselect;
 	    @extend %x_center;
-	    top:3px;
+	    top:5px;
+	    font-size: 13px;
+	    padding:0 5px;
 	    color:#fff;
 	    z-index:2;
 	    display: block;
 	    text-align:center;
 	    width: 100%;
-	    text-shadow: 0px 0px 3px rgba(0,0,0,0.75);
+	    text-shadow: 0px 0px 3px rgba(0,0,0,1);
 	}
 	> div {
 	    @extend %noselect;
-	    @extend %x_center;
-	    top:auto;
-	    bottom:0;
+	    position: relative;
 	    margin:0;
 	    width:75px;
-	    height:80px;
+	    height:75px;
+	    background-size:cover;
 	    &.building {
-		bottom:-16px;
+		//		bottom:-16px;
+	    }
+	    .building-mount {
+		color:#fff;
+
 	    }
 	}
-	&:hover {
-	    border:1px solid blue;
-	    > div {
-		zoom:1.2;
-	    }
+	.model-wrap {
+	    @include pos(20px,0%);
 	}
 	&:nth-child(4n+0) {
-	    margin-right:0;
+	    /*margin-right:0;*/
 	}
 	&:last-child {
 	    margin-right:0;
+	}
+    }
+
+}
+
+.fs_Window {
+    &.add-platform {
+	.fs_ListItem {
+	    .model-wrap {
+		@include pos(auto,auto,auto,auto);
+	    }
 	}
     }
 }

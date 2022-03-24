@@ -84,7 +84,7 @@ var fs_ModelBuilder = new Class({
 	}.bind(this));
 
 	this.arrangeWin = new fs_Window({
-	    title: "Object Arranger",
+	    title: "Model Builder",
 	    body: this.cont,
 	    buttons: [
 		new fs_Button({
@@ -170,12 +170,14 @@ var fs_ModelBuilder = new Class({
 	listElm.adopt((new fs_Button({
 	    icon: 'randomize',
 	    html: 'Select All',
-	    click: function (e) {
-		this.center.getElements('> div').each(function (elm) {
-		    elm.addClass('active');
-		});
-		e.stop();
-	    }.bind(this)
+	    events: {
+		click: function (e) {
+		    this.center.getElements('> div').each(function (elm) {
+			elm.addClass('active');
+		    });
+		    e.stop();
+		}.bind(this)
+	    }
 	})).toElement());
 
 	var zoom = div({
@@ -468,7 +470,7 @@ var fs_ModelBuilder = new Class({
 		    break;
 		case "image" :
 		    var model = {
-			panel:'list-model-image',
+			panel: 'list-model-image',
 			height: 20,
 			width: 20,
 			image: obj.opts.value

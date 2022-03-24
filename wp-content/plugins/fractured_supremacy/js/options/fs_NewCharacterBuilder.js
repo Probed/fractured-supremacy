@@ -21,11 +21,11 @@ var newCharacterBuilder = new Class({
 		    }.bind(this));
 		}
 	    }.bind(this));
-	});
+	}.bind(this));
 
 	this.cont.adopt(this.addResButton);
 
-	this.addItemButton = addButton({html: 'Add Resource'}, function (e) {
+	this.addItemButton = addButton({html: 'Add Item'}, function (e) {
 	    this.getTypeSelect('item', function (itemid) {
 		if (itemid) {
 		    this.getUserString({
@@ -37,7 +37,7 @@ var newCharacterBuilder = new Class({
 		    }.bind(this));
 		}
 	    }.bind(this));
-	});
+	}.bind(this));
 	this.cont.adopt(this.addItemButton);
 
 	this.addCOButton = addButton({html: 'Add Celestial Object'}, function () {
@@ -50,8 +50,17 @@ var newCharacterBuilder = new Class({
 		    this.refresh();
 		}
 	    }.bind(this));
-	});
+	}.bind(this));
 	this.cont.adopt(this.addCOButton);
+
+	this.cont.adopt(new fs_Button({
+	    class: "type-options-save",
+	    icon: "migrate",
+	    html: "Save",
+	    events: {
+		click: this.save.bind(this)
+	    }
+	}));
 
 	this.cont.adopt(new fs_Button({
 	    class: "type-options-refresh",
@@ -212,6 +221,7 @@ var newCharacterBuilder = new Class({
 		value: id
 	    });
 	}.bind(this));
+	values.sort((a, b) => (a.name > b.name) ? 1 : -1);
 	this.getUserSelect({
 	    title: 'Choose ' + type,
 	    label: type,
@@ -247,10 +257,10 @@ var newCharacterBuilder = new Class({
 		rows: [[options.label, select]]
 	    }).toElement(),
 	    buttons: [
-		cancelButton(function () {
+		cancelButton({}, function () {
 		    this.win.close();
 		}.bind(this)),
-		okButton(function () {
+		okButton({}, function () {
 		    this.win.close(callback(select.value));
 		}.bind(this))
 	    ]
@@ -278,10 +288,10 @@ var newCharacterBuilder = new Class({
 		rows: [[options.label, input]]
 	    }).toElement(),
 	    buttons: [
-		cancelButton(function () {
+		cancelButton({}, function () {
 		    this.win.close();
 		}.bind(this)),
-		okButton(function () {
+		okButton({}, function () {
 		    this.win.close(callback(input.value));
 		}.bind(this))
 	    ]
@@ -336,18 +346,18 @@ var newCharacterBuilder = new Class({
 	    class: 'edit-layout'
 	}));
 	var layout = getOption(this.options.types["satellite"][s.id], "model", "layout", "primary");
-	layout["value"].each(function (cols, rowid) {
+	layout["value"].each(function (cols, y) {
 	    var r = new Element('div', {
 		class: 'layout-row'
 	    });
 	    l.adopt(r);
-	    cols.each(function (cell, colid) {
+	    cols.each(function (cell, x) {
 		var c = new Element('div', {
 		    class: 'layout-cell layout-cell-' + cell,
 		    html: cell
 		});
 		r.adopt(c);
-		var pobj = this.getPlatformByXY(s, rowid, colid);
+		var pobj = this.getPlatformByXY(s, y, x);
 		var image = getOption(this.options.types.platform[pobj && pobj.plat && pobj.plat.id], 'model', 'image', 'bg');
 //		debugger;
 		if (image && image["value"]) {
@@ -358,8 +368,8 @@ var newCharacterBuilder = new Class({
 			this.editing = {
 			    coindex: coindex,
 			    satindex: satindex,
-			    x: rowid,
-			    y: colid
+			    x: x,
+			    y: y
 			};
 			this.platwin && this.platwin.close();
 			this.platwin = new fs_Window({
@@ -370,14 +380,14 @@ var newCharacterBuilder = new Class({
 
 			    }.bind(this),
 			    buttons: [
-				deleteButton({html: 'Delete Platform'}, function () {
+				deleteButton({}, {html: 'Delete Platform'}, function () {
 				    delete this.options.newchar.celestial_object[coindex].satellite[satindex].platform[pobj.id];
 				    this.platwin && this.platwin.close();
 				    this.editing = {};
 				    this.refresh();
 				}.bind(this)),
 
-				cancelButton({html: 'Close'}, function () {
+				cancelButton({}, {html: 'Close'}, function () {
 				    this.platwin.close();
 				    this.editing = {};
 				}.bind(this)),
@@ -388,6 +398,7 @@ var newCharacterBuilder = new Class({
 					    id: id,
 					    inhabitant: []
 					});
+					debugger;
 					this.refresh();
 				    }.bind(this));
 				}.bind(this))
@@ -395,7 +406,7 @@ var newCharacterBuilder = new Class({
 			});
 			this.platwin.open();
 		    }.bind(this));
-		    if (coindex === this.editing.coindex && satindex === this.editing.satindex && colid === this.editing.y && rowid === this.editing.x) {
+		    if (coindex === this.editing.coindex && satindex === this.editing.satindex && x === this.editing.y && y === this.editing.x) {
 			c.fireEvent('click', new Event('click'));
 		    }
 		} else {
@@ -404,14 +415,14 @@ var newCharacterBuilder = new Class({
 			    this.editing = {
 				coindex: coindex,
 				satindex: satindex,
-				x: rowid,
-				y: colid
+				x: x,
+				y: y
 			    };
 			    this.getTypeSelect('platform', function (id) {
 				this.options.newchar.celestial_object[coindex].satellite[satindex].platform.push({
 				    id: id,
-				    x: rowid,
-				    y: colid,
+				    x: x,
+				    y: y,
 				    building: []
 				});
 				this.refresh();
@@ -438,7 +449,7 @@ var newCharacterBuilder = new Class({
 	sat.adopt(buttWrap);
 	return sat;
     },
-    getPlatformByXY: function (s, x, y) {
+    getPlatformByXY: function (s, y, x) {
 	if (typeOf(s["platform"]) !== "array") {
 	    return;
 	}

@@ -9,10 +9,8 @@ class fs_Expedition extends fs_TypeTable {
     const type_table = 'expedition_type';
     const table = 'expedition';
 
-    public function __construct($id, &$validate = array(), $table = self::table, $type_table = self::type_table) {
-	if (!empty($id)) {
-	    $this->load($id, $validate, $table, $type_table);
-	}
+    public function __construct($id_or_array, &$validate = array(), $table = self::table, $type_table = self::type_table) {
+	parent::__construct($id_or_array, $validate, $table, $type_table);
     }
 
     protected function load($id, &$validate = array(), $table = self::table, $type_table = self::type_table) {

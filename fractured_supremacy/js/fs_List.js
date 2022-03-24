@@ -16,13 +16,13 @@ var fs_List = new Class({
 	var li = null;
 	switch (this.options.as) {
 	    case 'button':
-		li = listitem.asButton();
+		li = listitem.asButton(this);
 		break;
 	    case 'link':
-		li = listitem.asLink();
+		li = listitem.asLink(this);
 		break;
 	    default:
-		li = listitem.asListItem();
+		li = listitem.asListItem(this);
 		break;
 	}
 	this.cont.adopt(li);

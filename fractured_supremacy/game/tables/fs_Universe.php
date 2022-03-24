@@ -8,6 +8,14 @@ class fs_Universe extends fs_Table {
 
     const table = "universe";
 
+    public function __construct($id_or_array, &$validate = array(), $table = self::table, $type_table = null) {
+	parent::__construct($id_or_array, $validate, $table, $type_table);
+    }
+
+    protected function load($id, &$validate = array(), $table = self::table, $type_table = NULL) {
+	return parent::load($id, $validate, $table, $type_table);
+    }
+
     public static function validate($args, &$validate = array()) {
 	validateBasicText($validate, "name", "Univer Name", $args["name"], 2, 50, false);
 	validateBasicText($validate, "frequency", "Universe Frequency", $args["name"], 2, 50, false);

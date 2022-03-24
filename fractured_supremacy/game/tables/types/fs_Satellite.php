@@ -38,6 +38,12 @@ class fs_Satellite extends fs_TypeTable {
     public static function addPlatform() {
 	$validate = array();
 
+	if (!fs_User::isLoggedIn()) {
+	    error('Not Logged In');
+	    return false;
+	}
+
+
 	$sat_id = $_POST["sat_id"];
 	$x = $_POST["x"] * 1;
 	$y = $_POST["y"] * 1;
@@ -60,6 +66,9 @@ class fs_Satellite extends fs_TypeTable {
 	    return false;
 	}
 
+	$char = fs_Character::getByUserID(fs_User::get("id"));
+	$char_id = $char['id'];
+
 	/*
 	 * Load the Satellite
 	 */
@@ -70,19 +79,51 @@ class fs_Satellite extends fs_TypeTable {
 	    return false;
 	}
 
-	$layout = $sat->getOption("layout");
-	if (empty($layout)) {
-	    fs_Main::q_response("error", 'No Layout Found');
+	/*
+	 * Load the Celestial Object
+	 */
+	$co = new fs_Celestial_Object($sat->row["celestial_object_id"], $validate);
+	if (hasError($validate)) {
+	    fs_Main::q_response("error", 'Celestial Object Validation Error');
+	    fs_Main::q_response("validate", $validate);
 	    return false;
 	}
-	//verify they are allowed to place something there
+
+	/*
+	 * Load the Universe
+	 */
+	$uni = new fs_Universe($co->row["universe_id"], $validate);
+	if (hasError($validate)) {
+	    fs_Main::q_response("error", 'Universe Validation Error');
+	    fs_Main::q_response("validate", $validate);
+	    return false;
+	}
+
+	/**
+	 * Ensure the satellite is owned by the character making the request
+	 */
+	if ($char_id != $uni->row["character_id"]) {
+	    fs_Main::q_response("error", 'You do not belong to that universe!');
+	    return false;
+	}
+
+	/**
+	 * Load the Layout for the satalite
+	 */
+	$model = $sat->getOption("model");
+	if (empty($model)) {
+	    fs_Main::q_response("error", 'No Model Found.');
+	    return false;
+	}
+	$layout = $model[0]["value"];
+
+	//verify they are allowed to place something at coorids y,x
 	$grid = array();
 	foreach ($layout as $ly => $row) {
 	    $ly = $ly * 1;
 	    $grid[$ly] = array();
-	    $cols = explode(",", $row);
-	    foreach ($cols as $lx => $allowed) {
-		$lx =$lx*1;
+	    foreach ($row as $lx => $allowed) {
+		$lx = $lx * 1;
 		//echo "Allowed: $allowed\n";
 		$grid[$ly][$lx] = array();
 		$grid[$ly][$lx]["allowed"] = $allowed;
@@ -107,16 +148,39 @@ class fs_Satellite extends fs_TypeTable {
 	}
 	foreach ($plats as $index => $plat) {
 	    $platform = new fs_Platform($plat, $validate);
-	    $pX = $platform->getOption("platformPosition", "x")*1;
-	    $pY = $platform->getOption("platformPosition", "y")*1;
+	    $pX = $platform->getOption("platformPosition", "x") * 1;
+	    $pY = $platform->getOption("platformPosition", "y") * 1;
 	    $grid[$pY][$pX]["platform"] = $platform;
 	}
 	if (!empty($grid[$y][$x]["platform"])) {
-	    fs_Main::q_response("error", 'A Platform already exists there.');
+	    fs_Main::q_response("error", 'A Platform already exists here.');
 	    return false;
 	}
 
-	//Get the platform type that is to be builtr
+	//check there is a platform to connect to
+	// a b c
+	// d N e
+	// f g h
+	$a = $y - 1 >= 0 && $y - 1 >= 0 && isset($grid[$y - 1]) && isset($grid[$y - 1][$x - 1]) ? $grid[$y - 1][$x - 1] : null;
+	$b = $y - 1 >= 0 && isset($grid[$y - 1]) && isset($grid[$y - 1][$x]) ? $grid[$y - 1][$x] : null;
+	$c = $y - 1 >= 0 && isset($grid[$y - 1]) && isset($grid[$y - 1][$x + 1]) ? $grid[$y - 1][$x + 1] : null;
+	$d = $grid[$y][$x - 1];
+	$e = $grid[$y][$x + 1];
+	$f = $grid[$y + 1][$x - 1];
+	$g = $grid[$y + 1][$x];
+	$h = $grid[$y + 1][$x + 1];
+	$connectable = false;
+	foreach ([$a, $b, $c, $d, $e, $f, $g, $h] as $p) {
+	    if (!empty($p) && isset($p["platform"])) {
+		$connectable = true;
+	    }
+	}
+	if (!$connectable) {
+	    fs_Main::q_response("error", 'Cannot connect this platform to the main structure.');
+	    return false;
+	}
+
+	//Get the platform type that is to be built
 	$new_plat_type = fs_Table::get($plat_type_id, $validate, fs_Platform::type_table);
 	if (hasError($validate)) {
 	    fs_Main::q_response("error", 'Invalid Platform Type.');
@@ -124,6 +188,27 @@ class fs_Satellite extends fs_TypeTable {
 	    return false;
 	}
 
+	$buildReqs = array();
+	$buildReq = new buildReq($plat_type_id, fs_Platform::type_table, $buildReqs, $validate);
+	if (!$buildReq) {
+	    error("You have not met the requirements to build this platform", $buildReqs, $validate);
+	    return false;
+	}
+
+	$buildCosts = array();
+	$buildCost = new buildCost($plat_type_id, fs_Platform::type_table, $buildCosts, $validate);
+	if (!$buildCost) {
+	    error('You cannot afford to build this platform', $buildCosts, $validate);
+	    return false;
+	}
+
+	if (hasError($validate)) {
+	    fs_Main::q_response("error", 'Validation Error');
+	    fs_Main::q_response("validate", $validate);
+	    return false;
+	}
+
+	$validate = array();
 	$platform_id = fs_Platform::create(array(
 		    "satellite_id" => $sat_id,
 		    "platform_type_id" => $plat_type_id,
@@ -131,11 +216,8 @@ class fs_Satellite extends fs_TypeTable {
 			"platformPosition" => array(
 			    "x" => $x,
 			    "y" => $y
-			),
-			"level" => 1
+			)
 		    )), $validate);
-
-
 
 	if (hasError($validate)) {
 	    fs_Main::q_response("error", 'Validation Error');

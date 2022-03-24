@@ -15,7 +15,6 @@ class fs_Main {
      *
      * @param type $loggedin //used by wordpress admin to assume a logged in state
      */
-
     public static function main($loggedin = false) {
 
 	if ($loggedin) {
@@ -26,7 +25,7 @@ class fs_Main {
 	self::load();
 	self::process();
 
-	if ($_GET['admin']) {
+	if (isset($_GET['admin'])) {
 	    self::q_css("admin");
 	}
 	self::end();
@@ -167,7 +166,7 @@ class fs_Main {
     public static function q_response($key, $value) {
 	if (!isset(self::$out[$key])) {
 	    self::$out[$key] = $value;
-	    fs_Debug::log('Adding Output', TRACE, $key);
+	    fs_Debug::log('Adding Output: '.$key, TRACE, $value);
 	}
 	self::$out[$key] = $value;
     }
@@ -229,10 +228,13 @@ class fs_Main {
 
     private static function get_body() {
 	if (fs_User::fb_login() && isset($_GET["code"])) {
-	    header('Location: ' . ROOT_URL);
-	    die();
+	    //header('Location: ' . ROOT_URL);
+	    //die();
 	}
 	?>
+	<script type="module">
+	    import * as THREE from './js/vendor/three/build/three.module.js';
+	</script>
 	<div class='page-wrapper'>
 	    <?php
 	    if (!fs_User::isLoggedIn()) {

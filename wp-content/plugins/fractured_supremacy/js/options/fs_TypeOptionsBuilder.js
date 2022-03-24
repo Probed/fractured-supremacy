@@ -68,6 +68,8 @@ var fs_TypeOptionsBuilder = new Class({
     },
 
     refresh: function (e = null) {
+	inTotalsCache = {};
+	outChainCache = {};
 	e && e.stop();
 	this.contInt.empty();
 
@@ -229,16 +231,15 @@ var fs_TypeOptionsBuilder = new Class({
 		if (typeOf(type.options) != 'object') {
 		    return;
 		}
-		if (typeOf(type.options.produce) != 'array') {
+		if (typeOf(type.options.produce) != 'object' && typeOf(type.options.produce) != 'array') {
 		    return;
 		}
 
-		type.options.produce.each(function (produce, pidx) {
+		each(type.options.produce,function (produce, pidx) {
 		    if (typeOf(produce.value.output) != 'object') {
 			return;
 		    }
 		    var calc = this.calcProduceVals(produce);
-
 		    each(produce.value.output, function (pids, pTable) {
 			each(pids, function (qty, pId) {
 			    if (pTable == typeTable && pId == typeId) {
@@ -267,16 +268,15 @@ var fs_TypeOptionsBuilder = new Class({
 		if (typeOf(type.options) != 'object') {
 		    return;
 		}
-		if (typeOf(type.options.produce) != 'array') {
+		if (typeOf(type.options.produce) != 'object' && (typeOf(type.options.produce) != 'array')) {
 		    return;
 		}
 
-		type.options.produce.each(function (produce, pidx) {
+		each(type.options.produce,function (produce, pidx) {
 		    if (typeOf(produce.value.output) != 'object') {
 			return;
 		    }
 		    var calc = this.calcProduceVals(produce);
-
 		    each(produce.value.input, function (pids, pTable) {
 			each(pids, function (qty, pId) {
 			    if (pTable == typeTable && pId == typeId) {
@@ -318,7 +318,7 @@ var fs_TypeOptionsBuilder = new Class({
 			}.bind(this));
 		    }.bind(this));
 
-		    if (isReqBy) {
+		    if (isReqBy && !/Splitter/.test(type.name)) {
 			//var calc = this.calcProduceVals(produce);
 			each(produce.value.output, function (pids, pTable) {
 			    each(pids, function (qty, pId) {
@@ -346,7 +346,7 @@ var fs_TypeOptionsBuilder = new Class({
 		if (typeOf(type.options) != 'object') {
 		    return;
 		}
-		if (typeOf(type.options.produce) != 'array') {
+		if (typeOf(type.options.produce) != 'object' && (typeOf(type.options.produce) != 'array') || /Splitter/.test(type.name)) {
 		    return;
 		}
 
@@ -618,6 +618,9 @@ var fs_TypeOptionsBuilder = new Class({
 	}.bind(this));
 	wrap.adopt(typesUl);
 	wrap.adopt(listing);
+	if (this.options.table == "tech_tree") {
+	    wrap.adopt(new fs_Chain(this).buildTechTree());
+	}
 	return wrap;
     },
 
@@ -627,10 +630,7 @@ var fs_TypeOptionsBuilder = new Class({
 	    html: fs_Icon('edit') + ' ' + linkText,
 	    events: {
 		click: function (e) {
-		    var oldtbl = this.options.table;
-		    this.options.table = table;
-		    new fs_MultiProduceEditor(this, upgradeList, function () {
-			this.options.table = oldtbl;
+		    new fs_MultiProduceEditor(this, table, upgradeList, function () {
 			this.refresh();
 		    }.bind(this)).open();
 		    e.stop();
@@ -721,7 +721,21 @@ var fs_TypeOptionsBuilder = new Class({
 		if (optType == 'produce') {
 		    var lvls = this.getTypesBySubcat(this.options.table, typeStr, cat, subcat);
 		    var list = this.getUpgradeList(this.options.table, Object.keys(lvls)[0]);
-		    new fs_MultiProduceEditor(this, list, function () {
+		    new fs_MultiProduceEditor(this, this.options.table, list, function () {
+			this.refresh();
+		    }.bind(this)).open();
+		}
+		if (optType == 'buildCost') {
+		    var lvls = this.getTypesBySubcat(this.options.table, typeStr, cat, subcat);
+		    var list = this.getUpgradeList(this.options.table, Object.keys(lvls)[0]);
+		    new fs_BuildCostBuilder(this, this.options.table, list, function () {
+			this.refresh();
+		    }.bind(this)).open();
+		}
+		if (optType == 'buildReq') {
+		    var lvls = this.getTypesBySubcat(this.options.table, typeStr, cat, subcat);
+		    var list = this.getUpgradeList(this.options.table, Object.keys(lvls)[0]);
+		    new fs_BuildReqBuilder(this, this.options.table, list, function () {
 			this.refresh();
 		    }.bind(this)).open();
 		}
@@ -861,9 +875,7 @@ var fs_TypeOptionsBuilder = new Class({
 	    }
 	});
 	if (table == 'resource') {
-	    row.push(new fs_ResourcePath(this, typeId, function () {
-
-	    }.bind(this)).toElement());
+	    row.push(new fs_Chain(this, table, typeId).getTabs());
 	}
 
 	wrap.setHeaders([
@@ -920,6 +932,12 @@ var fs_TypeOptionsBuilder = new Class({
 	    switch (true) {
 		case typeOpt == "produce":
 		    panel = this.buildProduceOption(table, typeId, type.options[typeOpt]);
+		    break;
+		case typeOpt == "buildCost":
+		    panel = this.buildBuildCostOption(table, typeId, type.options[typeOpt]);
+		    break;
+		case typeOpt == "buildReq":
+		    panel = this.buildBuildReqOption(table, typeId, type.options[typeOpt]);
 		    break;
 		case typeOpt == "upTo":
 		    panel = this.buildUpToOption(table, typeId, type.options[typeOpt]);
@@ -1123,7 +1141,7 @@ var fs_TypeOptionsBuilder = new Class({
 	});
 
 	if (produce) {
-	    produce.each(function (prod, idx) {
+	    each(produce,function (prod, idx) {
 		if (!prod["produce"]) {
 		    return;
 		}
@@ -1135,10 +1153,10 @@ var fs_TypeOptionsBuilder = new Class({
 		    each(p.input, function (tables, tbl) {
 			each(tables, function (qty, id) {
 			    var w = div({
-				class: 'produce-item',
+				class: 'produce-type',
 				title: this.options.types[tbl][id]["name"]
 			    });
-			    var m = new fs_Model(this.options.types[tbl][id])
+			    var m = new fs_Model(this.options.types[tbl][id],{height:75,width:75})
 			    w.adopt(m);
 			    w.addEvent('click', function (e) {
 				getUserString({
@@ -1152,8 +1170,12 @@ var fs_TypeOptionsBuilder = new Class({
 				}.bind(this));
 			    }.bind(this));
 			    w.adopt(div({
-				class: 'produce-nameqty',
+				class: 'produce-type-qty',
 				html: '<span>' + qty + '</span>'
+			    }));
+			    w.adopt(div({
+				class: 'produce-type-name',
+				html: this.options.types[tbl][id]["name"]
 			    }));
 			    pin.adopt(w);
 			}.bind(this));
@@ -1163,10 +1185,10 @@ var fs_TypeOptionsBuilder = new Class({
 		    each(p.output, function (tables, tbl) {
 			each(tables, function (qty, id) {
 			    var w = div({
-				class: 'produce-item',
+				class: 'produce-type',
 				title: this.options.types[tbl][id]["name"]
 			    });
-			    var m = new fs_Model(this.options.types[tbl][id])
+			    var m = new fs_Model(this.options.types[tbl][id],{height:75,width:75})
 			    w.adopt(m);
 			    w.addEvent('click', function (e) {
 				getUserString({
@@ -1180,7 +1202,11 @@ var fs_TypeOptionsBuilder = new Class({
 				}.bind(this));
 			    }.bind(this));
 			    w.adopt(div({
-				class: 'produce-nameqty',
+				class: 'produce-type-name',
+				html: '<span>' + this.options.types[tbl][id].name + '</span>'
+			    }));
+			    w.adopt(div({
+				class: 'produce-type-qty',
 				html: '<span>' + qty + '</span>'
 			    }));
 			    pout.adopt(w);
@@ -1208,24 +1234,11 @@ var fs_TypeOptionsBuilder = new Class({
 	}
 
 	prodTbl.push([' ', {
-		content: (new fs_Button({
-		    icon: 'plus',
-		    click: function (e) {
-			this.openProduceEditor(table, typeId, null, null, function (value) {
-			    if (value) {
-				if (!this.options.types[table][typeId].options) {
-				    this.options.types[table][typeId].options = {};
-				}
-				if (!this.options.types[table][typeId].options.produce) {
-				    this.options.types[table][typeId].options.produce = [];
-				}
-				this.options.types[table][typeId].options.produce.push(value);
-				this.refresh();
-			    }
-			}.bind(this));
-			e.stopPropagation();
-		    }.bind(this)
-		})).toElement()
+		content: editButton({}, function () {
+		    new fs_MultiProduceEditor(this, table, this.getUpgradeList(table, typeId), function () {
+			this.refresh();
+		    }.bind(this)).open();
+		}.bind(this)).toElement()
 	    }, ' ']);
 
 	return div({class: 'produce-wrap'}).adopt([div({
@@ -1367,46 +1380,43 @@ var fs_TypeOptionsBuilder = new Class({
 		    }
 		    each(types, function (qty, typeid) {
 			var itemwrap = div({
-			    class: 'produce-item-wrap'
+			    class: 'produce-type'
 			});
 			itemwrap.adopt(new fs_Model(this.options.types[table][typeid]).toElement());
 			itemwrap.adopt(div({
-			    class: 'produce-item-label',
+			    class: 'produce-type-name',
 			    html: this.options.types[table][typeid]["name"]
 			}));
-			itemwrap.adopt(new fs_Button({
-			    html: qty,
-			    icon: 'edit',
-			    events: {
-				click: function () {
-				    getUserString({
-					title: 'Quantity',
-					label: 'Quantity'
-				    }, function (newqty) {
-					if (newqty) {
-					    if (!clone['value'].input) {
-						clone['value'].input = {};
-					    }
-					    if (!clone['value'].input[table]) {
-						clone['value'].input[table] = {};
-					    }
-					    clone['value'].input[table][typeid] = newqty;
-					    refresh();
-					}
-				    }.bind(this));
-				}.bind(this)
-			    }
+			itemwrap.adopt(div({
+			    class: 'produce-type-qty',
+			    html: qty
 			}));
-
-			itemwrap.adopt(new fs_Button({
-			    icon: 'no',
-			    events: {
-				click: function () {
-				    delete clone['value'].input[table][typeid];
+			itemwrap.addEvent('click', function () {
+			    getUserString({
+				title: 'Quantity',
+				label: 'Quantity'
+			    }, function (newqty) {
+				if (newqty) {
+				    if (!clone['value'].input) {
+					clone['value'].input = {};
+				    }
+				    if (!clone['value'].input[table]) {
+					clone['value'].input[table] = {};
+				    }
+				    clone['value'].input[table][typeid] = newqty;
 				    refresh();
-				}.bind(this)
-			    }
-			}));
+				}
+			    }.bind(this));
+			}.bind(this));
+			var context = [];
+			itemwrap.addEvent('contextmenu', function (e) {
+			    openContextMenu(e, context);
+			    e.stop();
+			}.bind(this));
+			context[fs_Icon('no') + ' Remove'] = function () {
+			    delete clone['value'].input[table][typeid];
+			    refresh();
+			}.bind(this);
 			input.adopt(itemwrap);
 		    }.bind(this));
 		}.bind(this));
@@ -1416,12 +1426,16 @@ var fs_TypeOptionsBuilder = new Class({
 		each(clone['value'].output, function (types, table) {
 		    each(types, function (qty, typeid) {
 			var itemwrap = div({
-			    class: 'produce-item-wrap'
+			    class: 'produce-type'
 			});
 			itemwrap.adopt(new fs_Model(this.options.types[table][typeid]).toElement());
 			itemwrap.adopt(div({
-			    class: 'produce-item-label',
+			    class: 'produce-type-name',
 			    html: this.options.types[table][typeid]["name"]
+			}));
+			itemwrap.adopt(div({
+			    class: 'produce-type-qty',
+			    html: qty
 			}));
 			itemwrap.adopt(new fs_Button({
 			    html: qty,
@@ -1446,16 +1460,34 @@ var fs_TypeOptionsBuilder = new Class({
 				}.bind(this)
 			    }
 			}));
-
-			itemwrap.adopt(new fs_Button({
-			    icon: 'no',
-			    events: {
-				click: function () {
-				    delete clone['value'].output[table][typeid];
+			itemwrap.addEvent('click', function () {
+			    getUserString({
+				title: 'Quantity',
+				label: 'Quantity'
+			    }, function (newqty) {
+				if (newqty) {
+				    if (!clone['value'].output) {
+					clone['value'].output = {};
+				    }
+				    if (!clone['value'].output[table]) {
+					clone['value'].output[table] = {};
+				    }
+				    clone['value'].output[table][typeid] = newqty;
 				    refresh();
-				}.bind(this)
-			    }
-			}));
+				}
+			    }.bind(this));
+			}.bind(this));
+			var context = [];
+			itemwrap.addEvent('contextmenu', function (e) {
+			    openContextMenu(e, context);
+			    e.stop();
+			}.bind(this));
+			context[fs_Icon('no') + ' Remove'] = function () {
+			    delete clone['value'].input[table][typeid];
+			    refresh();
+			}.bind(this);
+			input.adopt(itemwrap);
+
 			output.adopt(itemwrap);
 		    }.bind(this));
 		}.bind(this));
@@ -1529,6 +1561,22 @@ var fs_TypeOptionsBuilder = new Class({
 	this.produceWin.open();
     },
 
+    buildBuildCostOption: function (table, typeId, typeOpt, optsList) {
+	var wrap = div({class: 'optTypeList'});
+	wrap.adopt(new fs_BuildCostBuilder(this, table, this.getUpgradeList(table, typeId), function () {
+	    this.refresh();
+	}.bind(this)).buildBuildCost(table, typeId, true));
+	return wrap;
+    },
+
+    buildBuildReqOption: function (table, typeId, typeOpt, optsList) {
+	var wrap = div({class: 'optTypeList'});
+	wrap.adopt(new fs_BuildReqBuilder(this, table, this.getUpgradeList(table, typeId), function () {
+	    this.refresh();
+	}.bind(this)).buildBuildReq(table, typeId));
+	return wrap;
+    },
+
     buildOptTypeList: function (table, typeId, typeOpt, optsList) {
 	var wrap = div({class: 'optTypeList'});
 	if (typeOf(optsList) == 'array') {
@@ -1550,28 +1598,25 @@ var fs_TypeOptionsBuilder = new Class({
 	    }.bind(this));
 	}
 	wrap.adopt(div({}));
-	wrap.adopt(addButton({
-	    html: 'New ' + typeOpt,
-	    click: function () {
-		getOptSelect(this.options.availableOptions[table][typeOpt], function (optTreeType) {
-		    if (optTreeType) {
-			this.openOptionEditor(optTreeType, {}, function (newOpt) {
-			    if (newOpt) {
-				if (typeOf(this.options.types[table][typeId].options[typeOpt]) != 'array') {
-				    this.options.types[table][typeId].options[typeOpt] = [];
-				}
-				this.options.types[table][typeId].options[typeOpt].push(newOpt);
-				this.refresh();
-				return true;
+	wrap.adopt(addButton({}, function () {
+	    getOptSelect(this.options.availableOptions[table][typeOpt], function (optTreeType) {
+		if (optTreeType) {
+		    this.openOptionEditor(optTreeType, {}, function (newOpt) {
+			if (newOpt) {
+			    if (typeOf(this.options.types[table][typeId].options[typeOpt]) != 'array') {
+				this.options.types[table][typeId].options[typeOpt] = [];
 			    }
-			    return false;
-			}.bind(this));
-			return true;
-		    }
-		    return false;
-		}.bind(this));
-	    }.bind(this)
-	}));
+			    this.options.types[table][typeId].options[typeOpt].push(newOpt);
+			    this.refresh();
+			    return true;
+			}
+			return false;
+		    }.bind(this));
+		    return true;
+		}
+		return false;
+	    }.bind(this));
+	}.bind(this), 'New ' + typeOpt));
 	return wrap;
     },
 
@@ -1652,12 +1697,13 @@ var fs_TypeOptionsBuilder = new Class({
 	    wrap.empty();
 	    each(this.options.optionsTree[optTreeType], function (val, key) {
 		var optElm;
-		var cb = function (newval) {
+		var cb = function (newval, name = '') {
 		    if (key == 'id') {
-			clone[val] = newval;
+			clone['id'] = name,
+				clone[val] = newval;
 		    } else {
 			clone[key] = newval;
-		    }
+		}
 		}.bind(this);
 		switch (true) {
 		    case key == "name":
@@ -1676,7 +1722,7 @@ var fs_TypeOptionsBuilder = new Class({
 			optElm = this.buildBooleanEditor(key, clone[key], cb);
 			break;
 		    case key == "id":
-			optElm = this.buildIdEditor(val, clone[val], cb);
+			optElm = this.buildIdEditor(val, clone, cb);
 			break;
 		    default:
 			optElm = this.buildDefaultEditor(key, clone[key], cb);
@@ -1738,6 +1784,31 @@ var fs_TypeOptionsBuilder = new Class({
 	});
 	wrap.adopt(div({
 	    class: 'option-group-item-label',
+	    html: "ID",
+	    events: {
+		click: function () {
+
+		}.bind(this)
+	    }
+	}));
+	var input;
+
+	wrap.adopt((div({
+	    class: 'type-def-value'
+	})).adopt(input = new Element('input', {
+	    type: 'text',
+	    placeholder: 'Name for Identification',
+	    value: currentVal && currentVal["id"],
+	    events: {
+		change: function (e) {
+		    callback(ids, input.value);
+		}.bind(this)
+	    }
+	})));
+	wrap.adopt(new Element('br'));
+
+	wrap.adopt(div({
+	    class: 'option-group-item-label',
 	    html: optLabel,
 	    events: {
 		click: function () {
@@ -1745,11 +1816,10 @@ var fs_TypeOptionsBuilder = new Class({
 		}.bind(this)
 	    }
 	}));
-
+	var ids = [];
 	var select = new Element('select', {
 	    events: {
 		change: function (e) {
-		    var ids = [];
 		    var sel = select.getSelected();
 		    if (sel[0]) {
 			val.empty();
@@ -1759,12 +1829,12 @@ var fs_TypeOptionsBuilder = new Class({
 
 			val.adopt(select);
 			if (ids[0]) {
-			    wrap.adopt(new fs_Model(this.options.types[optLabel][currentVal]));
+			    wrap.adopt(new fs_Model(this.options.types[optLabel][sel[0].value]));
 			}
 		    } else {
 			ids = null;
 		    }
-		    callback(ids);
+		    callback(ids, input.value);
 		}.bind(this)
 	    }
 	});
@@ -1777,7 +1847,7 @@ var fs_TypeOptionsBuilder = new Class({
 		html: type["name"],
 		value: index
 	    });
-	    if (currentVal && typeOf(currentVal) == 'array' && currentVal.indexOf(index) > -1) {
+	    if (currentVal && typeOf(currentVal[optLabel]) == 'array' && currentVal[optLabel].indexOf(index) > -1) {
 		option.setProperty("selected", "true");
 	    }
 	    select.adopt(option);

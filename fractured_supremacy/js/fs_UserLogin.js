@@ -24,7 +24,7 @@ var fs_UserLogin = new Class({
 
 	this.win = new fs_Window({
 	    canClose: false,
-	    title: "",
+	    title: div({html:"Login"}),
 	    body: this.tabs.toElement()
 	});
 	this.cont.adopt(this.win.toElement());

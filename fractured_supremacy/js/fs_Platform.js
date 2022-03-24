@@ -40,7 +40,7 @@ var fs_Platform = new Class({
      *
      * @returns null
      */
-    loadContainers :function() {
+    loadContainers: function () {
 	Object.each(this.options["buildings"], function (building, id) {
 	    building["object"].loadContainers()
 	    this.mountBuilding(building);
@@ -55,9 +55,10 @@ var fs_Platform = new Class({
 	}
 	Object.each(this.options.options.mounts, function (mount, id) {
 	    var mountelm = new Element('div', {
-		"class": "empty building-mount",
-		"events": {
-		    "click": function (e) {
+		class: "empty building-mount",
+		html: '',
+		events: {
+		    click: function (e) {
 			if (mountelm.hasClass('empty')) {
 			    this.addBuilding(mount["mount"]);
 			}
@@ -65,7 +66,7 @@ var fs_Platform = new Class({
 		    }.bind(this)
 		}
 	    });
-	    setMountPosition(mountelm,mount.position)
+	    setMountPosition(mountelm, mount.position)
 	    this.buildingMounts[mount.mount] = mountelm;
 	    this.cont.adopt(mountelm);
 	}.bind(this));
@@ -84,61 +85,68 @@ var fs_Platform = new Class({
     },
 
     addBuilding: function (mountName) {
-	var list = new fs_List({
-	    as: "button"
-	});
-	Object.each(TYPES["building"], function (ptype, id) {
-	    if (ptype.type == 'HQ') {
-		return;
-	    }
-	    list.addListItem(new fs_ListItem({
-		title: ptype.name,
-		body: new fs_Building({building_type_id: id}, this).toElement(),
-		click: function (e) {
 
-		    var building = {
-			id: 999,
-			platform_id: this.platform.id,
-			building_type_id: id,
-			options: {
-			    buildingMounts: {
-				mountName: 999
-			    }
-			}
-		    };
-		    building["object"] = new fs_Building(building, this);
-		    this.satellite.satellite.platforms[this.platform.id]["buildings"][building.id] = building;
-		    this.buildingMounts[mountName].adopt(building["object"].toElement());
-		    this.buildingMounts[mountName].removeClass('empty');
-		    this.options.buildingMounts = this.satellite.satellite.platforms[this.platform.id]["options"]["buildingMounts"] = Object.merge({id: 999}, this.options.buildingMounts);
-		    this.satellite.mountPlatforms();
-		    win.close();
-//		    app.submit({
-//			action: 'addPlatform',
-//			data: {
-//			    sat_id: this.satellite.satellite.id,
-//			    plat_id: this.platform.id,
-//			    mount: mountName,
-//			    plat_type_id: id
-//			},
-//			onSuccess: function (response) {
-//			    var plat = response.platform[0];
-//			    plat["object"] = new fs_Platform(plat, this.satellite);
-//			    this.satellite.satellite.platforms[plat["id"]] = plat;
-//			    this.satellite.cont.adopt(plat["object"].toElement());
-//			    this.options.platformMounts = this.satellite.satellite.platforms[this.platform.id]["options"]["platformMounts"] = Object.merge(response.mounts, this.options.platformMounts);
-//			    this.satellite.mountPlatforms();
-//			    win.close();
-//			}.bind(this)
-//		    });
-		}.bind(this)
-	    }));
+	var buildings = {};
+	each(upTypes["building"], function (typeIds, sc) {
+	    each(typeIds, function (arr) {
+		buildings[arr[0]] = TYPES["building"][arr[0]];
+	    });
+	});
+	var keys = Object.keys(buildings);
+	keys.sort(function (a, b) {
+	    var namea = buildings[a]["name"];
+	    var nameb = buildings[b]["name"]
+	    return namea < nameb ? -1 : (namea > nameb ? 1 : 0);
+	});
+
+	var tabs = new fs_Tabs();
+	each(["Basic", "Intermediate", "Advanced", "Revolutionary", "Special"], function (type, index) {
+	    var list = new fs_List({
+		as: "button"
+	    });
+	    Object.each(keys, function (id) {
+		var building_type = TYPES["building"][id];
+		if (building_type.type != type) {
+		    return;
+		}
+		list.addListItem(new fs_ListItem({
+		    title: building_type.name.replace('Level 1', ''),
+		    body: new fs_Building({building_type_id: id}).getModel(),
+		    click: function (e) {
+			app.submit({
+			    action: 'addBuilding',
+			    data: {
+				plat_id: this.options.id,
+				mount: mountName,
+				building_type_id: id
+			    },
+			    onSuccess: function (response) {
+				var building = response.building;
+				building["object"] = new fs_Building(building, this);
+				this.satellite.options.platforms[this.options.id]["buildings"][building.id] = building;
+				this.buildingMounts[mountName].adopt(building["object"].toElement());
+				this.buildingMounts[mountName].removeClass('empty');
+				this.satellite.mountPlatforms();
+				win.close();
+			    }.bind(this)
+			});
+		    }.bind(this)
+		}));
+	    }.bind(this));
+	    tabs.add({label: type}, list);
 	}.bind(this));
 	var win = new fs_Window({
-	    'class': 'add add-building',
+	    class: 'add add-building',
 	    canClose: true,
 	    title: "Build New Building",
-	    body: list.toElement()
+	    body: tabs.toElement(),
+	    buttons: [
+		(cancelButton({}, function () {
+		    win.close();
+		}))
+	    ]
 	}).open();
+
+	tabs.activate(0);
     }
 });

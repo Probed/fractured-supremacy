@@ -116,7 +116,7 @@ var fs_ResourcePath = new Class({
 	    'Average'
 	];
 	each(lvlavg, function (total, level) {
-	    lvlavg[level] = lvlavg[level] / lvlavgcnt[level];
+	    lvlavg[level] = lvlavgcnt[level] / lvlavg[level];
 	    foot.push(lvlavg[level].toFixed(1));
 	});
 	if (asTable) {
@@ -263,17 +263,52 @@ var fs_ResourcePath = new Class({
 
 	var chainIn = this.inputChain(chainin, 1, inlist, inused, totals, this.id);
 
-	var totalOut = '';
-	each(totals, function (mins,lvl) {
+	var totalOut = div();
+	each(totals, function (mins, lvl) {
 	    if (isNaN(mins)) {
 		return;
 	    }
-	    totalOut += (mins/((lvl*1)+1)).toFixed(0) + 'm / ';
+	    var tot = (mins / ((lvl * 1) + 1)).toFixed(0)
+	    var qtydiv;
+	    totalOut.adopt(qtydiv = div({
+		html: 'Level ' + ((lvl*1) + 1) + '<br/>' + tot + 'm',
+		class: 'level-time',
+		events: {
+		    click: function () {
+			$$('.level').hide();
+			$$('.level-time').removeClass('active');
+			$$('.level-' + lvl).show();
+			qtydiv.addClass('active');
+		    }
+		}
+	    }));
 	});
+	var inUsedWrap = div({style: 'display:inline-block;'});
+	each(inused, function (types, key) {
+	    var type = this.builder.getType(key.split(':')[1], key.split(':')[0]);
+	    var used = div({class: 'type-used'});
+	    var lvls = {};
+	    each(types, function (builder, index) {
+		each(builder.qty, function (qty, lvl) {
+		    if (!lvls[lvl]) {
+			lvls[lvl] = 0;
+		    }
+		    lvls[lvl] += qty;
+		}.bind(this));
+	    }.bind(this));
+	    var lvlqtys = '';
+	    each(lvls, function (totalqty, lvl) {
+		lvlqtys += '<span class="level level-' + lvl + '">' + totalqty + '</span>';
+	    }.bind(this));
+	    used.adopt(new fs_Model(type, {height: 32, width: 32}));
+	    used.adopt(div({html: lvlqtys}));
+	    inUsedWrap.adopt(used);
+	}.bind(this));
 	var out = ul({class: 'chain depth-0'});
 	out.adopt(new li({class: 'chain-item'})
 		.adopt(new fs_Model(this.builder.getType(this.id, 'resource')))
-		.adopt(div({html: '' + totalOut.slice(0, totalOut.length - 3)}))
+		.adopt(totalOut)
+		.adopt(inUsedWrap)
 		.adopt(this.buildProducedBy('resource', this.id, this.id, {}, true))
 		.adopt(chainIn));
 	wrap.adopt(out);
@@ -307,9 +342,7 @@ var fs_ResourcePath = new Class({
 		});
 
 		var type = this.builder.getType(key.split(':')[1], key.split(':')[0]);
-		var top = 0;
-		var left = 0;
-		var model = new fs_Model(type,{height: 30,width:30});
+		var model = new fs_Model(type, {height: 30, width: 30});
 		item.adopt(model);
 		var pby = div();
 		item.adopt(pby);
@@ -318,7 +351,6 @@ var fs_ResourcePath = new Class({
 			item.removeClass('active');
 			pby.empty();
 		    } else {
-			var pqty = {};
 			item.addClass('active');
 			pby.adopt(div({html: 'Produced By:'}));
 			pby.adopt(this.buildProducedBy(key.split(':')[0], key.split(':')[1], {}, true));
@@ -356,7 +388,7 @@ var fs_ResourcePath = new Class({
 		});
 
 		var type = this.builder.getType(key.split(':')[1], key.split(':')[0]);
-		var model = new fs_Model(type,{height: 30,width:30});
+		var model = new fs_Model(type, {height: 30, width: 30});
 		item.adopt(model);
 		var pby = div();
 		item.adopt(pby);
@@ -382,13 +414,14 @@ var fs_ResourcePath = new Class({
 		    !totals[lvl] && (totals[lvl] = 0);
 		    totals[lvl] += permin * rqty[lvl];
 		    //item.adopt(div({
-			//html: 'in[: ' + (permin * rqty[lvl]).toFixed(1) + '] run['+totals[lvl].toFixed(1)+']'
+		    //html: 'in[: ' + (permin * rqty[lvl]).toFixed(1) + '] run['+totals[lvl].toFixed(1)+']'
 		    //}));
 		});
 
 		used[key].push({
 		    table: chain.table,
-		    typeId: chain.typeId
+		    typeId: chain.typeId,
+		    qty: rqty
 		});
 		item.adopt(this.inputChain(chain[key], depth + 1, list, used, totals, key.split(':')[1]));
 		wrap.adopt(item);

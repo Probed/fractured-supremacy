@@ -2,6 +2,10 @@ var fs_Satellite = new Class({
     Extends: fs_TypeTable,
     table: 'satellite',
     table_type: 'satellite_type',
+    shieldTop: 9999,
+    shieldLeft: 9999,
+    shieldRight: 0,
+    shieldBottom: 0,
     platformSize: null,
     dragging: false,
     options: {
@@ -20,13 +24,17 @@ var fs_Satellite = new Class({
 	this.celestial_object = celestial_object; //the parent celestial object
 
 	var size = getOption(this.options, "model", "var", "platformSize");
-	this.platformSize = size["val"];
+	this.platformSize = size["val"] * 1;
 
 	this.layout = getOption(this.options, "model", "layout", "value");
 	this.layout = this.layout["value"];
 
 	this.cont.style.height = ((this.layout[0].length) * this.platformSize) + 'px';
 	this.cont.style.width = ((this.layout.length) * this.platformSize) + 'px';
+
+	this.cont.adopt(this.shield = div({
+	    class: 'satellite-shield'
+	}));
 
 	Object.each(this.options["platforms"], function (plat, id) {
 	    plat["object"] = new fs_Platform(plat, this);
@@ -49,11 +57,14 @@ var fs_Satellite = new Class({
      * Calls loadContainer on all child objects
      * @returns null
      */
-    loadContainers :function() {
+    loadContainers: function () {
+	this.cont.empty();
 	Object.each(this.options["platforms"], function (plat, id) {
 	    this.cont.adopt(plat["object"].loadContainers());
 	}.bind(this));
 	this.mountPlatforms();
+	this.shield.style.height = (this.platformSize + (this.shieldBottom - this.shieldTop)) + 'px';
+	this.shield.style.width = (this.platformSize + (this.shieldRight - this.shieldLeft)) + 'px';
 	return this.cont;
     },
     mountPlatforms: function () {
@@ -76,7 +87,7 @@ var fs_Satellite = new Class({
 	    y = y * 1;
 	    Object.each(row, function (col, x) {
 		x = x * 1;
-		var p = this.getPlatformByPos(x, y);
+		var p = this.getPlatformByPos(y, x);
 		if (p) {
 		    var area = this.addPlatformArea(y, x, grid);
 		    if (area) {
@@ -99,6 +110,11 @@ var fs_Satellite = new Class({
 		    this.addPlatformArea(y, x + 1, grid);
 		    this.addPlatformArea(y - 1, x, grid);
 		    this.addPlatformArea(y + 1, x, grid);
+
+		    this.addPlatformArea(y-1, x - 1, grid);
+		    this.addPlatformArea(y+1, x + 1, grid);
+		    this.addPlatformArea(y - 1, x+1, grid);
+		    this.addPlatformArea(y + 1, x-1, grid);
 		}
 	    }.bind(this));
 	}.bind(this));
@@ -161,12 +177,25 @@ var fs_Satellite = new Class({
 	if (area) {
 	    area.style.height = (this.platformSize) + 'px';
 	    area.style.width = (this.platformSize) + 'px'
-	    area.style.top = (this.platformSize * x) + 'px'
-	    area.style.left = (this.platformSize * y) + 'px'
+	    area.style.top = (this.platformSize * y) + 'px'
+	    area.style.left = (this.platformSize * x) + 'px'
 	    area.addEvent('click', function (e) {
 		t.addPlatform(y, x);
 		e.stopPropagation();
 	    }.bind(this));
+
+	    if ((this.platformSize * y) < this.shieldTop) {
+		this.shieldTop = (this.platformSize * y);
+	    }
+	    if (this.platformSize + (this.platformSize * y) > this.shieldBottom) {
+		this.shieldBottom = this.platformSize + (this.platformSize * y);
+	    }
+	    if ((this.platformSize * x) < this.shieldLeft) {
+		this.shieldLeft = (this.platformSize * x);
+	    }
+	    if (this.platformSize + (this.platformSize * x) > this.shieldRight) {
+		this.shieldRight = this.platformSize + (this.platformSize * x);
+	    }
 	}
 
 	return area;
@@ -175,31 +204,43 @@ var fs_Satellite = new Class({
 	var list = new fs_List({
 	    as: "button"
 	});
-	Object.each(TYPES["platform"], function (ptype, id) {
+	var platforms = {};
+	each(upTypes["platform"],function(typeIds,sc) {
+	    each(typeIds,function(arr){
+		platforms[arr[0]] = TYPES["platform"][arr[0]];
+	    });
+	});
+	var keys = Object.keys(platforms);
+	keys.sort(function (a, b) {
+	    var namea = platforms[a]["name"];
+	    var nameb = platforms[b]["name"]
+	    return namea < nameb ? -1 : (namea > nameb ? 1 : 0);
+	});
+	Object.each(keys, function (id) {
+	    var ptype = TYPES["platform"][id];
 	    if (ptype.type == 'Hub') {
 		return;
 	    }
 	    list.addListItem(new fs_ListItem({
-		title: ptype.name,
-		body: new Element('div', {
-		    'class': 'platform '
-		}),
+		title: ptype.name.replace('Level 1',''),
+		body: new fs_Platform({platform_type_id: id}, this).getModel({height:75,width:75}),
 		click: function (e) {
 		    app.submit({
 			action: 'addPlatform',
 			data: {
-			    sat_id: this.satellite.id,
+			    sat_id: this.options.id,
 			    plat_type_id: ptype.id,
 			    x: x,
 			    y: y
 			},
 			onSuccess: function (response) {
 			    var plat = response.platform[0];
+			    plat["buildings"] = [];
 			    plat["object"] = new fs_Platform(plat, this);
-			    this.satellite.platforms[plat["id"]] = plat;
+			    this.options.platforms[plat["id"]] = plat;
 			    this.cont.adopt(plat["object"].toElement());
 			    win.close();
-			    this.activate();
+			    this.loadContainers();
 			}.bind(this)
 		    });
 		}.bind(this)
@@ -212,7 +253,7 @@ var fs_Satellite = new Class({
 	    body: list.toElement()
 	}).open();
     },
-    getPlatformByPos: function (x, y) {
+    getPlatformByPos: function (y, x) {
 	var platform = null;
 	Object.each(this.options["platforms"], function (plat, id) {
 	    if (platform) {

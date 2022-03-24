@@ -161,28 +161,28 @@ var fs_LayoutBuilder = new Class({
 		    }.bind(this)
 		})).toElement(),
 		okButton({html: 'Apply'}, function () {
-			var ret = [];
-			for (var idx = 0; idx <= this.rows; idx++) {
-			    ret[idx] = [];
-			    for (var idy = 0; idy <= this.cols; idy++) {
-				ret[idx][idy] = this.editArr[idx][idy];
-			    }
+		    var ret = [];
+		    for (var idx = 0; idx <= this.rows; idx++) {
+			ret[idx] = [];
+			for (var idy = 0; idy <= this.cols; idy++) {
+			    ret[idx][idy] = this.editArr[idx][idy];
 			}
-			this.model[this.layoutIndex].value = this.editArr = ret;
-			this.callback && this.callback(this.model);
-		    }.bind(this)
-		),
+		    }
+		    this.model[this.layoutIndex].value = this.editArr = ret;
+		    this.callback && this.callback(this.model);
+		}.bind(this)
+			),
 		okButton({html: 'Save'}, function () {
-			var ret = [];
-			for (var idx = 0; idx <= this.rows; idx++) {
-			    ret[idx] = [];
-			    for (var idy = 0; idy <= this.cols; idy++) {
-				ret[idx][idy] = this.editArr[idx][idy];
-			    }
+		    var ret = [];
+		    for (var idx = 0; idx <= this.rows; idx++) {
+			ret[idx] = [];
+			for (var idy = 0; idy <= this.cols; idy++) {
+			    ret[idx][idy] = this.editArr[idx][idy];
 			}
-			this.model[this.layoutIndex].value = this.editArr = ret;
-			this.layoutWin.close(this.callback && this.callback(this.model));
-		    }.bind(this))
+		    }
+		    this.model[this.layoutIndex].value = this.editArr = ret;
+		    this.layoutWin.close(this.callback && this.callback(this.model));
+		}.bind(this))
 	    ]
 	});
 	this.layoutWin.open();
@@ -422,18 +422,14 @@ var fs_LayoutBuilder = new Class({
 			});
 		    }.bind(this));
 		    row.push({
-			content: (new fs_Button({
-			    html: 'Edit',
-			    icon: 'edit',
-			    click: function (e) {
-				this.builder.openOptionEditor(Object.keys(obj)[0], obj, function (newOpt) {
-				    if (newOpt) {
-					this.model[index] = newOpt;
-					this.refreshVarVals();
-				    }
-				}.bind(this));
-			    }.bind(this)
-			})).toElement()
+			content: [editButton({}, function () {
+			    this.builder.openOptionEditor(Object.keys(obj)[0], obj, function (newOpt) {
+				if (newOpt) {
+				    this.model[index] = newOpt;
+				    this.refreshVarVals();
+				}
+			    }.bind(this));
+			}.bind(this), "Edit")]
 		    });
 		    tbl.push(row);
 		}
@@ -441,30 +437,22 @@ var fs_LayoutBuilder = new Class({
 	}
 
 	tbl.push([{
-		content: [(new fs_Button({
-			html: 'Add Var',
-			icon: 'plus',
-			click: function (e) {
-			    this.builder.openOptionEditor('var', {}, function (newOpt) {
-				if (newOpt) {
-				    this.model.push(newOpt);
-				    this.refreshVarVals();
-				}
-			    }.bind(this));
-			}.bind(this)
-		    })).toElement(),
-		    (new fs_Button({
-			html: 'Add CSS',
-			icon: 'plus',
-			click: function (e) {
-			    this.builder.openOptionEditor('css', {}, function (newOpt) {
-				if (newOpt) {
-				    this.model.push(newOpt);
-				    this.refreshVarVals();
-				}
-			    }.bind(this));
-			}.bind(this)
-		    })).toElement()
+		content: [(addButton({}, function () {
+			this.builder.openOptionEditor('var', {}, function (newOpt) {
+			    if (newOpt) {
+				this.model.push(newOpt);
+				this.refreshVarVals();
+			    }
+			}.bind(this));
+		    }.bind(this), "Add Var")),
+		    (addButton({}, function () {
+			this.builder.openOptionEditor('css', {}, function (newOpt) {
+			    if (newOpt) {
+				this.model.push(newOpt);
+				this.refreshVarVals();
+			    }
+			}.bind(this));
+		    }.bind(this), "Add CSS")),
 		],
 		properties: {
 		    colspan: 5

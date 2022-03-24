@@ -12,8 +12,9 @@ var CONFIG = <?= json_encode($out) ?>;
 
 <?php
 if (fs_User::isLoggedIn()) {
-    $validate = $v;
-    $uni = fs_Character::build_universe($user["id"], $character["id"],$v);
+    //$validate = $v;
+    $char = fs_Character::getByUserID(fs_User::get("id"));
+    $uni = fs_Character::build_universe(fs_User::get("id"), $char['id']);
     cleanArray($uni, SANATIZE);
     ?>
     var TYPES = <?= json_encode(fs_TypeTable::allTypes()) ?>;

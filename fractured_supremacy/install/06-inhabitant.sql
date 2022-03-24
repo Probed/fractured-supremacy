@@ -31,6 +31,7 @@ CREATE TABLE `inhabitant_item` (
   `inhabitant_id` bigint(20) unsigned NOT NULL,
   `item_store_id` bigint(20) unsigned NOT NULL,
   `slot` int(11) DEFAULT NULL,
+  `universe_id` bigint(20) unsigned NOT NULL,
   `options` text NULL,
   PRIMARY KEY (`id`),
   KEY `inhabitant_item_inhabitant_id` (`inhabitant_id`),

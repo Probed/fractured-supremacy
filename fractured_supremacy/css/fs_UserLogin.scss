@@ -27,7 +27,7 @@
     }
     .tabs-wrapper-login {
 	@extend %tabs;
-	width:315px;
+	width:405px;
 	h1 {
 	    @extend %h1;
 	}
@@ -47,16 +47,20 @@
     .facebook-login {
 	@extend %button;
 	@include bg(transparent, false, false, auto);
-	background-image:url('image/facebook.png'),linear-gradient(to right, transparent 0%, $facebook_color 50%, transparent 100%);
+	background-image:url('image/facebook.png'),linear-gradient(to right, $facebook_color 50%, $facebook_color 50%, $facebook_color 50%);
 	background-position: 40px 50%, 0 0;
 	border: none;
 	display: block;
 	color:#fff;
 	&:hover {
 	    @include bg(transparent, false, false, auto);
-	    background-image:url('image/facebook.png'),linear-gradient(to right, $facebook_color 0%, $facebook_color 50%, $facebook_color 100%);
+	    background-image:url('image/facebook.png'),linear-gradient(to right, $facebook_color 100%, $facebook_color 100%, $facebook_color 100%);
 	    background-position: 40px 50%, 0 0;
 	    border:none;
 	}
     }
+}
+
+.title-wrapper span {
+    color:#000;
 }

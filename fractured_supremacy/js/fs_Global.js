@@ -17,16 +17,12 @@ var deactivate = function (elms) {
 };
 var errWin = null;
 var error = function (options) {
-    if (!errWin) {
-	errWin = new fs_Window({
-	    canClose: true,
-	    "class": "error"
-	});
-	$(document.body).adopt(errWin);
-    }
-    errWin.setTitle(options.title);
-    errWin.setBody(options.body);
-    errWin.open();
+    new fs_Window({
+	title: options.title,
+	body: options.body,
+	canClose: true,
+	"class": "error"
+    }).open();
 };
 
 var getOption = function (type, optionGroup, optionItem, key) {
@@ -71,9 +67,9 @@ var okButton = function (options = {}, callback, text = "Ok") {
     }, options));
 };
 
-var addButton = function (options = {}, callback, text = "Ok") {
+var addButton = function (options = {}, callback, text = "Add") {
     return new fs_Button(Object.merge({
-	html: 'Add',
+	html: text,
 	icon: 'plus',
 	events: {
 	    click: function (e) {
@@ -84,9 +80,9 @@ var addButton = function (options = {}, callback, text = "Ok") {
     }, options));
 };
 
-var cancelButton = function (options = {}, callback, text = "Ok") {
+var cancelButton = function (options = {}, callback, text = "Cancel") {
     return new fs_Button(Object.merge({
-	html: 'Cancel',
+	html: text,
 	icon: 'no',
 	events: {
 	    click: function (e) {
@@ -97,9 +93,9 @@ var cancelButton = function (options = {}, callback, text = "Ok") {
     }, options));
 };
 
-var deleteButton = function (options = {}, callback, text = "Ok") {
+var deleteButton = function (options = {}, callback, text = "Delete") {
     return new fs_Button(Object.merge({
-	html: 'Delete',
+	html: text,
 	icon: 'no',
 	events: {
 	    click: function (e) {
@@ -110,9 +106,9 @@ var deleteButton = function (options = {}, callback, text = "Ok") {
     }, options));
 };
 
-var editButton = function (options = {}, callback, text = "Ok") {
+var editButton = function (options = {}, callback, text = "Edit") {
     return new fs_Button(Object.merge({
-	html: 'Edit',
+	html: text,
 	icon: 'edit',
 	events: {
 	    click: function (e) {
@@ -215,6 +211,7 @@ var getIDSelect = function (types, table, index, qty, callback) {
 	    }
 	});
 	body.push(['Table', tableSelect]);
+	tableSelect.adopt(new Element('option'));
 	Object.each(types, function (typelist, tbl) {
 	    var opt;
 	    tableSelect.adopt(opt = new Element('option', {
@@ -235,6 +232,7 @@ var getIDSelect = function (types, table, index, qty, callback) {
 		}
 	    });
 	    body.push([seltable, idSelect]);
+	    idSelect.adopt(new Element('option'));
 	    Object.each(types[seltable], function (type, idx) {
 		if (idx == 0) {
 		    return;
@@ -505,6 +503,7 @@ var getTypesTableSelect = function (types, table, index, callback) {
 	    value: id
 	});
     });
+    values.sort((a, b) => (a.name > b.name) ? 1 : -1);
     getUserSelect({
 	title: 'Choose ' + table,
 	label: table,
@@ -524,6 +523,7 @@ var getTableSelect = function (types, table, callback) {
 	    value: name
 	});
     });
+    values.sort((a, b) => (a.name > b.name) ? 1 : -1);
     getUserSelect({
 	title: 'Choose Table Type',
 	label: "Table Type",
@@ -687,10 +687,10 @@ var getRenameType = function (types, table, curType, callback) {
 	    ]
 	}).toElement(),
 	buttons: [
-	    cancelButton({},function () {
+	    cancelButton({}, function () {
 		win.close();
 	    }.bind(this)),
-	    okButton({},function () {
+	    okButton({}, function () {
 		win.close(callback(clone));
 	    }.bind(this))
 	]
@@ -834,3 +834,61 @@ var tokenizeHash = function () {
     }
     return tokenized;
 };
+
+var upTypes = {};
+var buildUpTypesArr = function () {
+    //load all types that don't have an upto value set
+    //these are considered the max level for the type
+    var upHeir = {};
+    each(TYPES, function (types, table) {
+	each(types, function (type, index) {
+	    if (index != 0 && (typeOf(type.options) != 'object' || typeOf(type.options.upTo) != 'array' || typeOf(type.options.upTo[0]) != 'object')) {
+		!upHeir[table] ? upHeir[table] = {} : "";
+		upHeir[table][index] = {};
+		getLevelHeir(table, index, upHeir[table][index]);
+	    }
+	});
+    });
+
+    upTypes = {};
+    each(upHeir, function (typeIdHeirs, table) {
+	each(typeIdHeirs, function (typeIdHeir, fromIdx) {
+	    var types = [];
+	    types = flattenHeir(types, typeIdHeir);
+	    types.reverse();
+	    types.push(fromIdx * 1);
+	    var t = TYPES[table][fromIdx];
+	    var sc = t.type + t.category + t.subcat;
+	    !upTypes[table] ? upTypes[table] = {} : "";
+	    if (typeOf(upTypes[table][sc]) != 'array') {
+		upTypes[table][sc] = [];
+	    }
+	    upTypes[table][sc].push(types);
+	});
+    });
+}
+var getLevelHeir = function (table, upFrom, levelHeir = {}, depth = 0) {
+    var upTo;
+    each(TYPES[table], function (type, index) {
+	if (index === 0 || typeOf(type.options) != 'object' || typeOf(type.options.upTo) != 'array' || typeOf(type.options.upTo[0]) != 'object') {
+	    return;
+	}
+	var checkUpTo = type.options.upTo[0][Object.keys(type.options.upTo[0])[0]] * 1;
+	if (upFrom == checkUpTo) {
+	    upTo = index * 1;
+	}
+    }.bind(this));
+    if (upTo) {
+	levelHeir[upTo] = {};
+	depth++;
+	getLevelHeir(table, upTo, levelHeir[upTo], depth);
+}
+}
+
+var flattenHeir = function (arr, levelHeir) {
+    if (levelHeir && levelHeir[Object.keys(levelHeir)[0]]) {
+	arr.push(Object.keys(levelHeir)[0] * 1);
+	flattenHeir(arr, levelHeir[Object.keys(levelHeir)[0]]);
+    }
+    return arr;
+}

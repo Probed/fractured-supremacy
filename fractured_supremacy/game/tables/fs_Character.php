@@ -325,7 +325,8 @@ class fs_Character extends fs_Table {
 	$uni_id = fs_Universe::create(array(
 		    "name" => "My Universe",
 		    "frequency" => uniqid(),
-		    "character_id" => $char_id), $validate);
+		    "character_id" => $char_id
+			), $validate);
 
 	$types = fs_TypeTable::allTypes();
 	$newchar = json_decode(file_get_contents(DOCUMENT_ROOT . "game/tables/newCharacter.json"), 1);
@@ -334,8 +335,8 @@ class fs_Character extends fs_Table {
 	    foreach ($newchar["resource"] as $id => $qty) {
 		$res_id = fs_Resource::create($res = array(
 			    "qty" => $qty,
-			    "resource_type" => $id,
-			    "universe_id" => $uni_id,
+			    "resource_type_id" => $id,
+			    "universe_id" => $uni_id
 				), $validate);
 	    }
 	}
@@ -345,7 +346,7 @@ class fs_Character extends fs_Table {
 		$item_id = fs_Item::create($item = array(
 			    "item_type_id" => $id,
 			    "qty" => $qty,
-			    "universe_id" => $uni_id,
+			    "universe_id" => $uni_id
 				), $validate);
 	    }
 	}
@@ -360,7 +361,8 @@ class fs_Character extends fs_Table {
 			    "name" => $types["celestial_object"][$co["id"]]["name"],
 			    "options" => array("active" => $active_celestial_object == null ? true : false),
 			    "celestial_object_type_id" => $co["id"],
-			    "universe_id" => $uni_id), $validate);
+			    "universe_id" => $uni_id),
+				$validate);
 		$active_celestial_object = $coID;
 
 		if (empty($co["satellite"])) {
@@ -374,7 +376,8 @@ class fs_Character extends fs_Table {
 		    $satID = fs_Satellite::create(array(
 				"name" => $types["satellite"][$sat["id"]]["name"],
 				"satellite_type_id" => $sat["id"],
-				"celestial_object_id" => $coID), $validate);
+				"celestial_object_id" => $coID
+				    ), $validate);
 
 
 		    if (empty($sat["platform"])) {
@@ -393,7 +396,8 @@ class fs_Character extends fs_Table {
 					    "y" => $plat["y"],
 					)
 				    ),
-				    "satellite_id" => $satID), $validate);
+				    "satellite_id" => $satID
+					), $validate);
 
 			if (empty($plat["building"])) {
 			    continue;
@@ -402,14 +406,16 @@ class fs_Character extends fs_Table {
 			    if (empty($build)) {
 				continue;
 			    }
-			    $buildID = fs_Building::create($hq = array(
-					"name" => $types["building"][$build["id"]]["name"],
-					"platform_id" => $platID,
-					"building_type_id" => $build["id"],
-					"options" => array(
-					    "mount" => $build["mount"]
-					)
-					    ), $validate);
+			    if (isset($build["mount"])) {
+				$buildID = fs_Building::create($hq = array(
+					    "name" => $types["building"][$build["id"]]["name"],
+					    "platform_id" => $platID,
+					    "building_type_id" => $build["id"],
+					    "options" => array(
+						"mount" => $build["mount"]
+					    )
+						), $validate);
+			    }
 			}
 		    }
 		}

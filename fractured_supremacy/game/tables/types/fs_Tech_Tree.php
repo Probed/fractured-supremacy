@@ -10,10 +10,8 @@ class fs_Tech_Tree extends fs_TypeTable {
     const type_table = 'tech_tree_type';
     const table = 'tech_tree';
 
-    public function __construct($id, &$validate = array(), $table = self::table, $type_table = self::type_table) {
-	if (!empty($id)) {
-	    $this->load($id, $validate, $table, $type_table);
-	}
+    public function __construct($id_or_array, &$validate = array(), $table = self::table, $type_table = self::type_table) {
+	parent::__construct($id_or_array, $validate, $table, $type_table);
     }
 
     protected function load($id, &$validate = array(), $table = self::table, $type_table = self::type_table) {
@@ -25,7 +23,7 @@ class fs_Tech_Tree extends fs_TypeTable {
     }
 
     public static function create($args, &$validate = array(), $table = self::table) {
-	return parent::create($args, $validate, $table);
+    	return parent::create($args, $validate, $table);
     }
 
     public static function update($args, &$validate = array(), $table = self::table) {

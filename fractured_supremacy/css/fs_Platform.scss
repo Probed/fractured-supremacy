@@ -1,42 +1,31 @@
 %platform {
     box-sizing: border-box;
     @include bg(rgba(255,255,255,0.1),null,null,cover,null);
-    /*    -webkit-box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow:    0px 20px 20px 0px rgba(0, 0, 0, 0.5);
-	box-shadow:         0px 20px 20px 0px rgba(0, 0, 0, 0.5);*/
-    /*box-shadow: inset 0px -6px 10px rgba(0,0,0,0.5);*/
     display: block;
-    border-radius:0px;
-    /*border:1px solid white;*/
+    border-radius:5px;
     cursor:pointer;
     transition:transform 250ms ease-in-out;
-    .platform-mount {
-	display:block;
-	@include pos(auto,auto);
-	@include size(11px,11px);
-	&.empty {
-	    display:none;
-	    @include bg(#000,null,null,null);
-	    border-radius:50%;
-	    z-index:2;
-	    cursor:pointer;
-	    @include size(20px,20px);
-	    &:hover {
-		background:red;
-	    }
-	}
-    }
     .building-mount {
+	display:block;
 	position: absolute;
 	@include size(25px * 1,25px);
 	border-radius:50%;
 	z-index:2;
 	&.empty {
-	    content:'+';
+	    color:#fff;
+	    line-height:25px;
+	    text-align: center;
+	    font-weight: bold;
 	    &:hover {
-		display:block!important;
 		cursor:pointer;
 		background:blue;
+	    }
+	    &:before {
+		@extend %xy_center;
+		content:'+';
+		font-weight: bold;
+		font-size: 28px;
+		color:#fff;
 	    }
 	}
 	.building {
@@ -60,9 +49,11 @@
 	.building-mount {
 	    display:block;
 	    &.empty {
+		display: none;
 		background:rgba(86,86,86,1);
 		display:block;
 		&:hover {
+		    display: block;
 		    background:rgba(255,255,255,1);
 		    cursor:pointer;
 		}
@@ -70,6 +61,26 @@
 	}
     }
 }
+.platform-area {
+    display:block;
+    @include pos(auto,auto);
+    &.empty {
+	z-index:2;
+	cursor:pointer;
+	&:hover {
+	    border:1px dashed #fff;
+	    @include bg(green,null,null,null);
+	    &:after {
+		content:'+';
+		@extend %xy_center;
+		font-size:30px;
+		color:#fff;
+		font-weight: bold;
+	    }
+	}
+    }
+}
+
 .mid {
     .platform-area {
 	position:absolute;

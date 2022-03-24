@@ -32,16 +32,19 @@ class fs_Debug {
 	    $lvls = array();
 	    foreach (self::$log as $idx => $entry) {
 		$out .= '<tr class="fs_Debug-line ' . $entry["level"] . ' ' . gettype($entry["value"]) . '">' . "\r\n";
+		if (!isset($lvls[$entry["level"]])) {
+		    $lvls[$entry["level"]] = 0;
+		}
 		$lvls[$entry["level"]] += 1;
 		foreach ($entry as $key => $value) {
-		    $out .= "\t".'<td class="' . $key . '">' . "";
+		    $out .= "\t" . '<td class="' . $key . '">' . "";
 		    switch (gettype($value)) {
 			case 'string':
 			    $out .= $value;
 			    break;
 
 			case 'object':
-			    $out .= print_r($value,1);
+			    $out .= print_r($value, 1);
 			    break;
 
 			case 'function':

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `acheivement`;
-DROP TABLE IF EXISTS `acheivement_type`;
+DROP TABLE IF EXISTS `achievement_type`;
 
-CREATE TABLE `acheivement_type` (
+CREATE TABLE `achievement_type` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -24,6 +24,6 @@ CREATE TABLE `acheivement` (
   KEY `acheivement_universe_id` (`universe_id`),
   KEY `achievement_achievement_type_id` (`achievement_type_id`),
   CONSTRAINT `acheivement_universe_id` FOREIGN KEY (`universe_id`) REFERENCES `universe` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `achievement_achievement_type_id` FOREIGN KEY (`achievement_type_id`) REFERENCES `acheivement_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `achievement_achievement_type_id` FOREIGN KEY (`achievement_type_id`) REFERENCES `achievement_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

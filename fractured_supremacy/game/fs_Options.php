@@ -31,7 +31,7 @@ class fs_Options {
 
     public static function set(&$row, $key, $value, &$validate = array()) {
 	fs_Options::load($row, $validate);
-	if ($row["options"][$key] != $value) {
+	if (isset($row["options"][$key]) && $row["options"][$key] != $value) {
 	    $row["options"]["changed"] = true;
 	}
 	$row["options"][$key] = $value;

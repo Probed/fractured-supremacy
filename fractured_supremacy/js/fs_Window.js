@@ -70,7 +70,7 @@ var fs_Window = new Class({
 	    },
 	    headers: [
 		{
-		    content: this.options.title || "",
+		    content: this.options.title,
 		    properties: {
 			class: 'title'
 		    }
@@ -78,7 +78,7 @@ var fs_Window = new Class({
 		{
 		    content: new Element('div', {
 			class: 'close',
-			html: fs_Icon('no'),
+			//html: fs_Icon('no'),
 			'events': {
 			    'click': function () {
 				this.close();
@@ -124,10 +124,10 @@ var fs_Window = new Class({
     },
 
     setTitle: function (title) {
-	$$('.top', this.cont).empty().adopt(title);
+	this.cont.getChildren('.title').set('text',title);
     },
     setBody: function (body) {
-	$$('.mid', this.cont).empty().adopt(body);
+	this.cont.getChildren('.mid').empty().adopt(body);
     },
     setButtons: function (buttons) {
 	$$('.bot', this.cont).empty().adopt(buttons);

@@ -10,7 +10,7 @@ var fs_Model = new Class({
 	this.setOptions(options);
 	this.modelWrap = new Element('div', {
 	    class: 'model-wrap',
-	    title: type.name + ' ' + type.category + ' ' + type.subcat
+	    title: type.name
 	});
 	this.model = new Element('div', {
 	    'class': 'model'

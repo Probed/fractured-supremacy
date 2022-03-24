@@ -34,6 +34,7 @@ class fs_User {
     public static function isLoggedIn() {
 	return self::me()->_loggedIn;
     }
+
     public function setLoggedIn($status) {
 	$this->_loggedIn = $status;
 	$_SESSION['user'] = serialize($this);
@@ -120,7 +121,7 @@ class fs_User {
 	unset($result["password-again"]);
 
 	$_SESSION['user'] = serialize($user);
-	fs_Debug::log("Login Sucess", SUCCESS, $email);
+	fs_Debug::log("Login Sucess", SUCCESS, $result);
     }
 
     public static function refreshUser() {
@@ -521,8 +522,10 @@ class fs_User {
 	    //error("User Validation Failed", $validate, $validate);
 	    return false;
 	}
-
-	$id = number_or($args['id']);
+	$id = null;
+	if (isset($args['id'])) {
+	    $id = number_or($args['id']);
+	}
 
 	if (empty($id)) {
 	    $args['created'] = date("Y-m-d H:i:s");
@@ -870,7 +873,7 @@ class fs_User {
 	    // Validation (these will throw FacebookSDKException's when they fail)
 	    //$tokenMetadata->validateAppId(CONFIG["facebook"]["app_id"]); // Replace {app-id} with your app id
 	    //
-		// If you know the user ID this access token belongs to, you can validate it here
+	    // If you know the user ID this access token belongs to, you can validate it here
 	    //$tokenMetadata->validateUserId('123');
 	    $tokenMetadata->validateExpiration();
 
@@ -982,51 +985,6 @@ class fs_User {
 	fs_Character::create($user["id"], $validate);
 
 	return !hasError($validate);
-    }
-
-    public function test() {
-	return;
-	//fs_Debug::$pause = true;
-
-	$user = array(
-	    "email" => "tsmedes@slandstudios.com",
-	    "password" => "tsmedes",
-	    "password-again" => "tsmedes"
-	);
-	fs_User::save($user);
-
-	$verify = array(
-	    "email" => "tsmedes@slandstudios.com",
-	    "key" => fs_Options::get($user, "verify_key")
-	);
-
-	fs_User::verifyAccount($verify);
-
-	$login = array(
-	    "email" => "tsmedes@slandstudios.com",
-	    "password" => "tsmedes"
-	);
-	fs_User::me()->login($login);
-
-	fs_Debug::$pause = false;
-
-	$char = array(
-	    "user_id" => $user["id"],
-	    "name" => "Trevor",
-	    "created" => date("Y-m-d H:i:s")
-	);
-
-	$uni = array(
-	    "character_id" => fs_Character::create($char),
-	    "name" => "Trevor",
-	    "frequency" => "342"
-	);
-
-	$res = array(
-	    "universe_id" => fs_Universe::create($uni),
-	    "resource_type" => 1
-	);
-	fs_Resource::create($res);
     }
 
 }

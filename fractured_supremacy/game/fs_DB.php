@@ -111,7 +111,7 @@ class fs_DB {
 		    $str = json_encode($array[$key]);
 		    $bind[$i] = &$str;
 		    //fs_Debug::log("Binding Option Parameter", SQL, $array[$key]);
-		    $array[$ke] = $str;
+		    $array[$key] = $str;
 		} else {
 		    $bind[$i] = &$array[$key];
 		}

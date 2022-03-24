@@ -10,7 +10,6 @@ class fs_Table {
 
     public function __construct($id_or_array, &$validate = array(), $table = self::table, $type_table = self::type_table) {
 	if (gettype($id_or_array) == 'array' && is_numeric($id_or_array["id"])) {
-
 	    $this->id = $id_or_array["id"];
 	    $this->row = $id_or_array;
 	} else if (is_numeric($id_or_array)) {
@@ -33,7 +32,10 @@ class fs_Table {
 	    return $this->row;
 	}
 	//assign the row to the instance;
-	$this->row = self::get($id, $validate, $table)[0];
+	$rows = self::get($id, $validate, $table);
+	if (gettype($rows) == 'array') {
+	    $this->row = $rows[0];
+	}
 	return $this->row;
     }
 
@@ -96,8 +98,8 @@ class fs_Table {
      * @return int row id or false if validation failed
      */
     public static function get($args, &$validate = array(), $table = self::table) {
-	//print_r($args);
-	if (gettype($args) == "array") {
+//	print_r($args);
+	if (gettype($args) == "array" && isset($args["where"])) {
 	    $sql = "SELECT * from " . $table . " WHERE " . $args["where"];
 	} else {
 	    $sql = "SELECT * from " . $table . " WHERE id = " . $args;

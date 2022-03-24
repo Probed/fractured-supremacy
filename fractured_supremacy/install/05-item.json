@@ -1,1 +1,1 @@
-[{"disabled":true}]
+[{"disabled":true},{"name":"Troop Transport Blueprint","type":"Blueprint","category":"Ship","subcat":"Troop Transport","options":{"model":[{"css":"power"},{"image":"bg","value":"image\/item\/ta12-troop-transport-intact-and-wrecked-pHlzNsGR_200.png"}]}},{"name":"Satellite Ship Blueprint","type":"Blueprint","category":"Ship","subcat":"Satellite Ship","options":{"model":[{"css":"power"},{"image":"bg","value":"image\/item\/scifi_space_station_3d_model_c4d_max_obj_fbx_ma_lwo_3ds_3dm_stl_1551030_o.png"}]}}]
